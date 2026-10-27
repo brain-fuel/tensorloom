@@ -1,0 +1,130 @@
+{
+  "DEC-graph": {
+    "status": "decided",
+    "question": "What is a node result and a valid graph?",
+    "answer": "A node returns one typed value, recursively tensor, scalar, tuple or dictionary. Ordered operations refer only to available values; regions declare every dependency. Reject invalid captures and unstructured cycles. Versioned JSON and the Elixir builder share this model. Logical fan-out preserves the value without requiring a copy. Affects laws/graphs.lawspec and laws/numerical.lawspec.",
+    "opened": "0.2.0",
+    "decided": "0.2.0",
+    "refs": [
+      "user-plan",
+      "pytorch-export"
+    ]
+  },
+  "DEC-shapes": {
+    "status": "decided",
+    "question": "How do shapes and numerical comparisons work?",
+    "answer": "Use fixed rank, nonnegative concrete or symbolic extents, dtype/device/layout metadata and optional axis names. Broadcasting follows right-aligned positions, including zero with one yielding zero. Names select axes rather than align them. Exact integer shape models produce explicit unresolved constraints; runtime input and operation guards or export restrictions enforce them. Floating comparisons use dtype-specific tolerances and explicit NaN/infinity handling, never assumed associativity. Affects laws/shapes.lawspec.",
+    "opened": "0.2.0",
+    "decided": "0.2.0",
+    "refs": [
+      "user-plan",
+      "pytorch-broadcasting",
+      "pytorch-accuracy"
+    ]
+  },
+  "DEC-rewrites": {
+    "status": "decided",
+    "question": "When may regions collapse or expand?",
+    "answer": "Preserve all incoming and outgoing dependencies, result structure, parameter identity and effect order; reject selections that would create cycles or move effects across effects. Expand through alpha-renamed call regions and registered recipes to a stable representation. Conservatively rejected selections remain errors. Affects laws/graphs.lawspec and laws/numerical.lawspec.",
+    "opened": "0.2.0",
+    "decided": "0.2.0",
+    "refs": [
+      "user-plan",
+      "pytorch-accuracy"
+    ]
+  },
+  "DEC-control": {
+    "status": "decided",
+    "question": "How are routing and iteration represented?",
+    "answer": "Use exclusive structured branch regions and loops carrying one compatible structured value. Fixed count zero is identity. Convergence loops require a budget and fail when the predicate still holds after the allowed passes. Resolve compatible partial boolean assignments; independent decisions commute. Repeated compatible decisions are idempotent and conflicts fail. Only independent single-use reachable decisions justify 2^n assignments; do not claim a general hypercube. Affects laws/graphs.lawspec and laws/numerical.lawspec.",
+    "opened": "0.2.0",
+    "decided": "0.2.0",
+    "refs": [
+      "user-plan",
+      "pytorch-export"
+    ]
+  },
+  "DEC-state": {
+    "status": "decided",
+    "question": "How are state identity and randomness preserved?",
+    "answer": "Separate registered parameters, immutable constants and mutable buffers. Preserve actual shared parameter identity, frozen flags, gradient accumulation and buffer persistence. Random effects are independent of routing and state effects. Module train/eval selects behavior; supplied dropout masks define deterministic cases. Router-free does not imply deterministic. Affects laws/numerical.lawspec.",
+    "opened": "0.2.0",
+    "decided": "0.2.0",
+    "refs": [
+      "user-plan",
+      "pytorch-modules",
+      "pytorch-random"
+    ]
+  },
+  "DEC-library": {
+    "status": "decided",
+    "question": "Which architecture families have executable semantics?",
+    "answer": "Implement linear/MLP/residual, embedding, stable softmax, masked scaled attention, grouped/dilated Conv2d, max/average pooling, RNN/GRU/LSTM cells and sequence composition, LayerNorm, BatchNorm and dropout. Expose inspectable recipes and optional native lowering. PyTorch is the independent numerical reference; running BatchNorm variance is unbiased while training normalization is biased. Affects laws/numerical.lawspec and laws/shapes.lawspec.",
+    "opened": "0.2.0",
+    "decided": "0.2.0",
+    "refs": [
+      "user-plan",
+      "pytorch-index",
+      "pytorch-batchnorm"
+    ]
+  },
+  "DEC-import": {
+    "status": "decided",
+    "question": "How are PyTorch graphs captured?",
+    "answer": "Expose explicit FX and export paths without silent fallback. Preserve supported input/output structure, parameter aliases, buffers, finite symbolic bounds and available source metadata. Reject unsupported operators and mutations precisely. FX is the default for static Python control flow. Affects laws/numerical.lawspec and laws/graphs.lawspec.",
+    "opened": "0.2.0",
+    "decided": "0.2.0",
+    "refs": [
+      "user-plan",
+      "pytorch-export"
+    ]
+  },
+  "DEC-compiler": {
+    "status": "decided",
+    "question": "What is the first validated compiler profile?",
+    "answer": "Generate ordinary torch.nn.Module source from the Elixir graph core and shared operation registry. The first numerical profile is fixed-rank dense CPU Float32, Float64, Int64 and Bool. Pin Python 3.13 and PyTorch 2.14.1 with Elixir 1.20/OTP29. Test export inference separately, including dynamic dimensions, fixed recurrence and compatible tensor conditionals. Use the sibling LawSpec checkout without changing it. Selected layers are examples, properties and finite exhaustive checking; mandatory definition validation stays independent. Automated success is not human approval. Affects all laws/*.lawspec.",
+    "opened": "0.2.0",
+    "decided": "0.2.0",
+    "refs": [
+      "user-plan",
+      "pytorch-index",
+      "pytorch-export"
+    ]
+  },
+  "DEC-law-owned-conformance": {
+    "status": "decided",
+    "opened": "0.2.0",
+    "decided": "0.2.0",
+    "question": "Who owns the Python compiler conformance cases and their assertions, and do they require Ironframe or LawTwin?",
+    "answer": "The user requires the former 117 handwritten Python cases to be subsumed into LawSpec. Replace the coarse numerical Bool probes and the separate pytest matrix with a finite ConformanceCase domain, typed native observations, checked tolerance/nonfinite/structure comparisons, explicit shape examples, generated bounded shape inputs and observable mutation laws in python/laws/conformance.lawspec. Native adapters construct fixtures and return outputs, gradients, state, identity and diagnostics; they contain no conformance assertions. The Elixir frontend and Python backend are independently built LawSpec components, run together by scripts/verify.mjs. PyTorch is the independent native numerical reference and remains an explicit trust boundary. Keep exact shape comparisons and exact integer/boolean values. Use existing finite sequence iteration for complete tensor comparison rather than host-recursive list traversal. No sibling LawSpec change is required for these cases. Ironframe environment/deployment wiring and LawTwin external protocol fixtures are not required for this in-process library boundary. This supersedes the provisional numerical-probe implementation, not the graph or library intent. Human sign-off remains pending.",
+    "refs": [
+      "user-plan",
+      "lawspec-native-bindings",
+      "lawspec-harness",
+      "lawspec-iteration",
+      "ironframe-planes",
+      "lawtwin-planes"
+    ]
+  },
+  "DEC-project-name": {
+    "status": "decided",
+    "opened": "0.2.0",
+    "decided": "0.2.0",
+    "question": "What name identifies the project and its public implementations?",
+    "answer": "The user chose Tensorloom. Use tensorloom for the repository directory, Mix application and Python package, Tensorloom for Elixir modules and display names, Tensorloom-derived LawSpec namespaces and tensorloom.* document identities, and Tensorloom-derived names for component metadata and generated artifacts. Use tensorloom_contracts.* for Python LawSpec units so generated adapters do not collide with the tensorloom application package. Regenerate executable contracts and validate from the renamed directory. This changes naming and import identities, not graph semantics. Affects laws/shapes.lawspec, laws/graphs.lawspec and python/laws/conformance.lawspec. Human vetting remains separate from automated validation.",
+    "refs": [
+      "user-plan"
+    ]
+  },
+  "DEC-contract-names": {
+    "status": "decided",
+    "opened": "0.2.0",
+    "decided": "0.2.0",
+    "question": "How should Tensorloom name its LawSpec adapters?",
+    "answer": "Use meaningful operation names, with argument counts and rank restrictions expressed by type signatures. Replace the provisional numeric-suffix shape adapters with transposeShape, matmulShape, reshapeShape, concatenateShape, reduceShape and sliceShape. Bind them to descriptive snake-case native functions and represent the Matrix domain with Tensorloom.MatrixShape. LawSpec declaration identity remains unit::name. BEAM export arities remain backend implementation details. This is a naming cleanup with unchanged behavior, affecting laws/shapes.lawspec, lawspec.edn, lib/tensorloom/law_adapters.ex and generated contracts. Human vetting remains separate from automated validation.",
+    "refs": [
+      "user-plan",
+      "lawspec-native-bindings"
+    ]
+  }
+}

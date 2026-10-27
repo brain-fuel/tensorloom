@@ -1,0 +1,467 @@
+-- ref:DEC-project-name
+-- ref:DEC-law-owned-conformance
+unit tensorloom_contracts.conformance
+
+type Lowering is one of
+  | Native
+  | Expanded
+end type
+
+type Precision is one of
+  | Float32
+  | Float64
+end type
+
+type Kernel is one of
+  | Mlp
+  | Convolution
+  | Normalization
+  | Softmax
+  | MaxPool
+  | AverageExcludePad
+  | AverageIncludePad
+end type
+
+type Cell is one of
+  | Rnn
+  | Gru
+  | Lstm
+end type
+
+type Mask is one of
+  | BooleanMask
+  | AdditiveMask
+  | CausalMask
+  | FullyMasked
+end type
+
+type Expansion is one of
+  | LinearExpansion
+  | SoftmaxExpansion
+  | EmptySoftmaxExpansion
+  | ConvExpansion
+  | MaxPoolExpansion
+  | AvgPoolExpansion
+  | LayerNormExpansion
+  | BatchNormExpansion
+  | AttentionExpansion
+  | DropoutExpansion
+end type
+
+type ImportedLibrary is one of
+  | ImportedBatchNorm
+  | ImportedEmbedding
+  | ImportedPool
+end type
+
+type Rejection is one of
+  | DynamicCapture
+  | UnknownCapture
+  | WrongRank
+  | WrongDtype
+end type
+
+type Mutation is one of
+  | ReverseMask
+  | DuplicateParameter
+  | BiasedVariance
+  | ExecuteBothBranches
+end type
+
+type ShapeOperation is one of
+  | BroadcastShape
+  | MatmulShape
+  | ReshapeShape
+  | SumShape
+  | MeanShape
+  | MaximumShape
+  | MinimumShape
+  | ExpShape
+  | SqrtShape
+  | DivideShape
+end type
+
+type ShapeDtype is one of
+  | ShapeFloat32
+  | ShapeFloat64
+  | ShapeInt64
+  | ShapeBool
+end type
+
+type AxisChoice is one of
+  | AllAxes
+  | FirstAxis
+  | LastAxis
+  | EmptyAxes
+end type
+
+type Sample is one of
+  | Finite of type Rational
+  | NotANumber
+  | PositiveInfinity
+  | NegativeInfinity
+end type
+
+type KernelCase is a record{
+  kernel of type Kernel
+  precision of type Precision
+  lowering of type Lowering
+}
+end type
+
+type SharedCase is a record{
+  precision of type Precision
+  lowering of type Lowering
+}
+end type
+
+type CellCase is a record{
+  cell of type Cell
+  lowering of type Lowering
+}
+end type
+
+type AttentionCase is a record{
+  mask of type Mask
+  precision of type Precision
+  lowering of type Lowering
+}
+end type
+
+type ExpansionCase is a record{
+  expansion of type Expansion
+  lowering of type Lowering
+}
+end type
+
+type ImportCase is a record{
+  library of type ImportedLibrary
+  lowering of type Lowering
+}
+end type
+
+refinement Extent is (n of type Whole where n <= 8) end refinement
+refinement Shape is (sizes of type List Extent where prelude.length sizes <= 4) end refinement
+refinement TargetExtent is (n of type Integer where n >= -1 and n <= 8) end refinement
+refinement TargetShape is (sizes of type List TargetExtent where prelude.length sizes <= 4) end refinement
+
+type ShapeCase is a record{
+  operation of type ShapeOperation
+  left of type Shape
+  right of type Shape
+  target of type TargetShape
+  dtype of type ShapeDtype
+  axis of type AxisChoice
+}
+end type
+
+type TensorObservation is a record{
+  path of type Text
+  shape of type List Whole
+  dtype of type Text
+  samples of type List Sample
+}
+end type
+
+type Observation is a record{
+  tensors of type List TensorObservation
+  facts of type List Text
+}
+end type
+
+type ConformanceCase is one of
+  | ModuleExecution of type KernelCase
+  | SharedExecution of type SharedCase
+  | BatchState of type Lowering
+  | CellExecution of type CellCase
+  | EmbeddingExecution of type Lowering
+  | AttentionExecution of type AttentionCase
+  | DropoutExecution of type Lowering
+  | SoftmaxBoundaries of type Lowering
+  | ControlExecution of type Lowering
+  | CollapseExecution of type Lowering
+  | SavedExport of type Lowering
+  | CapturedExport of type Lowering
+  | RejectedExecution of type Rejection
+  | SequenceExecution of type CellCase
+  | ExpandedExecution of type ExpansionCase
+  | SavedConditional of type Lowering
+  | SavedRecurrence of type Lowering
+  | CapturedConditional of type Lowering
+  | ImportedExecution of type ImportCase
+  | NamedAxes
+  | FrozenState
+end type
+
+observe of type ConformanceCase -> Observation
+reference of type ConformanceCase -> Observation
+mutated of type Mutation -> Observation
+mutationReference of type Mutation -> Observation
+inferShape of type ShapeCase -> Observation
+referenceShape of type ShapeCase -> Observation
+
+function absolute (x of type Rational) -> Rational is if x < 0 then -x else x end if end function
+
+function closeSample (actual of type Sample) (expected of type Sample) (relative of type Rational) (absoluteError of type Rational) -> Bool is
+  first matching case of actual:
+    when Finite a then first matching case of expected:
+      when Finite b then absolute (a-b) <= absoluteError + relative * absolute b
+      when _ then false
+    end case
+    when NotANumber then expected = NotANumber
+    when PositiveInfinity then expected = PositiveInfinity
+    when NegativeInfinity then expected = NegativeInfinity
+  end case
+end function
+
+function samplesAtMatch (actual of type List Sample) (expected of type List Sample) (relative of type Rational) (absoluteError of type Rational) (index of type Integer) -> Bool is
+  first matching case of prelude.at index actual:
+    when Absent then false
+    when Present a then first matching case of prelude.at index expected:
+      when Absent then false
+      when Present b then closeSample a b relative absoluteError
+    end case
+  end case
+end function
+
+function samplesAtDiffer (actual of type List Sample) (expected of type List Sample) (relative of type Rational) (absoluteError of type Rational) (index of type Integer) -> Bool is
+  not (samplesAtMatch actual expected relative absoluteError index)
+end function
+
+function closeSamples (actual of type List Sample) (expected of type List Sample) (relative of type Rational) (absoluteError of type Rational) -> Bool is
+  prelude.length actual = prelude.length expected and
+  not (prelude.any (samplesAtDiffer actual expected relative absoluteError) (prelude.range 0 (prelude.length actual)))
+end function
+
+function closeTensor (actual of type TensorObservation) (expected of type TensorObservation) -> Bool is
+  first matching case of actual:
+    when TensorObservation record{path=ap,shape=ash,dtype=ad,samples=av} then
+      first matching case of expected:
+        when TensorObservation record{path=bp,shape=bsh,dtype=bd,samples=bv} then
+          ap = bp and ash = bsh and ad = bd and
+          closeSamples av bv (if ad = "float32" then rational(2,100000) else if ad = "float64" then rational(1,1000000000) else 0 end if end if)
+            (if ad = "float32" then rational(2,1000000) else if ad = "float64" then rational(1,10000000000) else 0 end if end if)
+      end case
+  end case
+end function
+
+function tensorsAtMatch (actual of type List TensorObservation) (expected of type List TensorObservation) (index of type Integer) -> Bool is
+  first matching case of prelude.at index actual:
+    when Absent then false
+    when Present a then first matching case of prelude.at index expected:
+      when Absent then false
+      when Present b then closeTensor a b
+    end case
+  end case
+end function
+
+function tensorsAtDiffer (actual of type List TensorObservation) (expected of type List TensorObservation) (index of type Integer) -> Bool is
+  not (tensorsAtMatch actual expected index)
+end function
+
+function closeTensors (actual of type List TensorObservation) (expected of type List TensorObservation) -> Bool is
+  prelude.length actual = prelude.length expected and
+  not (prelude.any (tensorsAtDiffer actual expected) (prelude.range 0 (prelude.length actual)))
+end function
+
+function equivalent (actual of type Observation) (expected of type Observation) -> Bool is
+  first matching case of actual:
+    when Observation record{tensors=a,facts=af} then first matching case of expected:
+      when Observation record{tensors=b,facts=bf} then af = bf and closeTensors a b
+    end case
+  end case
+end function
+
+law "|compiled execution preserves outputs gradients state identity and diagnostics| is
+  definition: for all (case of type ConformanceCase) =>
+    equivalent (observe case) (reference case) must be true
+  end for all end definition
+end law
+
+law "|deliberate compiler defects violate observable conformance| is
+  definition: for all (defect of type Mutation) =>
+    equivalent (mutated defect) (mutationReference defect) must be false
+  end for all end definition
+end law
+
+law "|shape inference agrees with independent PyTorch geometry and dtype| is
+  definition: for all (case of type ShapeCase) =>
+    inferShape case must be referenceShape case
+  end for all end definition
+  expect inferShape case = expected
+  in table (case,expected):
+    row ShapeCase record{operation=BroadcastShape,left=[],right=[],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[]", "float64"]}
+    row ShapeCase record{operation=BroadcastShape,left=[],right=[0],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[0]", "float64"]}
+    row ShapeCase record{operation=BroadcastShape,left=[],right=[1],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[1]", "float64"]}
+    row ShapeCase record{operation=BroadcastShape,left=[],right=[3],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[3]", "float64"]}
+    row ShapeCase record{operation=BroadcastShape,left=[],right=[2,3],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[2, 3]", "float64"]}
+    row ShapeCase record{operation=BroadcastShape,left=[],right=[2,0,3],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[2, 0, 3]", "float64"]}
+    row ShapeCase record{operation=BroadcastShape,left=[],right=[1,3],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[1, 3]", "float64"]}
+    row ShapeCase record{operation=BroadcastShape,left=[],right=[4,1,3],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[4, 1, 3]", "float64"]}
+    row ShapeCase record{operation=BroadcastShape,left=[0],right=[],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[0]", "float64"]}
+    row ShapeCase record{operation=BroadcastShape,left=[0],right=[0],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[0]", "float64"]}
+    row ShapeCase record{operation=BroadcastShape,left=[0],right=[1],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[0]", "float64"]}
+    row ShapeCase record{operation=BroadcastShape,left=[0],right=[3],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["rejected"]}
+    row ShapeCase record{operation=BroadcastShape,left=[0],right=[2,3],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["rejected"]}
+    row ShapeCase record{operation=BroadcastShape,left=[0],right=[2,0,3],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["rejected"]}
+    row ShapeCase record{operation=BroadcastShape,left=[0],right=[1,3],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["rejected"]}
+    row ShapeCase record{operation=BroadcastShape,left=[0],right=[4,1,3],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["rejected"]}
+    row ShapeCase record{operation=BroadcastShape,left=[1],right=[],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[1]", "float64"]}
+    row ShapeCase record{operation=BroadcastShape,left=[1],right=[0],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[0]", "float64"]}
+    row ShapeCase record{operation=BroadcastShape,left=[1],right=[1],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[1]", "float64"]}
+    row ShapeCase record{operation=BroadcastShape,left=[1],right=[3],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[3]", "float64"]}
+    row ShapeCase record{operation=BroadcastShape,left=[1],right=[2,3],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[2, 3]", "float64"]}
+    row ShapeCase record{operation=BroadcastShape,left=[1],right=[2,0,3],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[2, 0, 3]", "float64"]}
+    row ShapeCase record{operation=BroadcastShape,left=[1],right=[1,3],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[1, 3]", "float64"]}
+    row ShapeCase record{operation=BroadcastShape,left=[1],right=[4,1,3],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[4, 1, 3]", "float64"]}
+    row ShapeCase record{operation=BroadcastShape,left=[3],right=[],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[3]", "float64"]}
+    row ShapeCase record{operation=BroadcastShape,left=[3],right=[0],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["rejected"]}
+    row ShapeCase record{operation=BroadcastShape,left=[3],right=[1],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[3]", "float64"]}
+    row ShapeCase record{operation=BroadcastShape,left=[3],right=[3],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[3]", "float64"]}
+    row ShapeCase record{operation=BroadcastShape,left=[3],right=[2,3],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[2, 3]", "float64"]}
+    row ShapeCase record{operation=BroadcastShape,left=[3],right=[2,0,3],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[2, 0, 3]", "float64"]}
+    row ShapeCase record{operation=BroadcastShape,left=[3],right=[1,3],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[1, 3]", "float64"]}
+    row ShapeCase record{operation=BroadcastShape,left=[3],right=[4,1,3],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[4, 1, 3]", "float64"]}
+    row ShapeCase record{operation=BroadcastShape,left=[2,3],right=[],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[2, 3]", "float64"]}
+    row ShapeCase record{operation=BroadcastShape,left=[2,3],right=[0],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["rejected"]}
+    row ShapeCase record{operation=BroadcastShape,left=[2,3],right=[1],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[2, 3]", "float64"]}
+    row ShapeCase record{operation=BroadcastShape,left=[2,3],right=[3],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[2, 3]", "float64"]}
+    row ShapeCase record{operation=BroadcastShape,left=[2,3],right=[2,3],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[2, 3]", "float64"]}
+    row ShapeCase record{operation=BroadcastShape,left=[2,3],right=[2,0,3],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["rejected"]}
+    row ShapeCase record{operation=BroadcastShape,left=[2,3],right=[1,3],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[2, 3]", "float64"]}
+    row ShapeCase record{operation=BroadcastShape,left=[2,3],right=[4,1,3],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[4, 2, 3]", "float64"]}
+    row ShapeCase record{operation=BroadcastShape,left=[2,0,3],right=[],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[2, 0, 3]", "float64"]}
+    row ShapeCase record{operation=BroadcastShape,left=[2,0,3],right=[0],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["rejected"]}
+    row ShapeCase record{operation=BroadcastShape,left=[2,0,3],right=[1],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[2, 0, 3]", "float64"]}
+    row ShapeCase record{operation=BroadcastShape,left=[2,0,3],right=[3],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[2, 0, 3]", "float64"]}
+    row ShapeCase record{operation=BroadcastShape,left=[2,0,3],right=[2,3],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["rejected"]}
+    row ShapeCase record{operation=BroadcastShape,left=[2,0,3],right=[2,0,3],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[2, 0, 3]", "float64"]}
+    row ShapeCase record{operation=BroadcastShape,left=[2,0,3],right=[1,3],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[2, 0, 3]", "float64"]}
+    row ShapeCase record{operation=BroadcastShape,left=[2,0,3],right=[4,1,3],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["rejected"]}
+    row ShapeCase record{operation=BroadcastShape,left=[1,3],right=[],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[1, 3]", "float64"]}
+    row ShapeCase record{operation=BroadcastShape,left=[1,3],right=[0],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["rejected"]}
+    row ShapeCase record{operation=BroadcastShape,left=[1,3],right=[1],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[1, 3]", "float64"]}
+    row ShapeCase record{operation=BroadcastShape,left=[1,3],right=[3],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[1, 3]", "float64"]}
+    row ShapeCase record{operation=BroadcastShape,left=[1,3],right=[2,3],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[2, 3]", "float64"]}
+    row ShapeCase record{operation=BroadcastShape,left=[1,3],right=[2,0,3],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[2, 0, 3]", "float64"]}
+    row ShapeCase record{operation=BroadcastShape,left=[1,3],right=[1,3],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[1, 3]", "float64"]}
+    row ShapeCase record{operation=BroadcastShape,left=[1,3],right=[4,1,3],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[4, 1, 3]", "float64"]}
+    row ShapeCase record{operation=BroadcastShape,left=[4,1,3],right=[],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[4, 1, 3]", "float64"]}
+    row ShapeCase record{operation=BroadcastShape,left=[4,1,3],right=[0],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["rejected"]}
+    row ShapeCase record{operation=BroadcastShape,left=[4,1,3],right=[1],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[4, 1, 3]", "float64"]}
+    row ShapeCase record{operation=BroadcastShape,left=[4,1,3],right=[3],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[4, 1, 3]", "float64"]}
+    row ShapeCase record{operation=BroadcastShape,left=[4,1,3],right=[2,3],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[4, 2, 3]", "float64"]}
+    row ShapeCase record{operation=BroadcastShape,left=[4,1,3],right=[2,0,3],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["rejected"]}
+    row ShapeCase record{operation=BroadcastShape,left=[4,1,3],right=[1,3],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[4, 1, 3]", "float64"]}
+    row ShapeCase record{operation=BroadcastShape,left=[4,1,3],right=[4,1,3],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[4, 1, 3]", "float64"]}
+    row ShapeCase record{operation=MatmulShape,left=[3],right=[3],target=[],dtype=ShapeFloat32,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[]", "float32"]}
+    row ShapeCase record{operation=MatmulShape,left=[2,3],right=[3],target=[],dtype=ShapeFloat32,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[2]", "float32"]}
+    row ShapeCase record{operation=MatmulShape,left=[3],right=[2,3,5],target=[],dtype=ShapeFloat32,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[2, 5]", "float32"]}
+    row ShapeCase record{operation=MatmulShape,left=[2,1,3,0],right=[4,0,5],target=[],dtype=ShapeFloat32,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[2, 4, 3, 5]", "float32"]}
+    row ShapeCase record{operation=MatmulShape,left=[],right=[2,3],target=[],dtype=ShapeFloat32,axis=AllAxes}, Observation record{tensors=[],facts=["rejected"]}
+    row ShapeCase record{operation=MatmulShape,left=[2,3],right=[4,5],target=[],dtype=ShapeFloat32,axis=AllAxes}, Observation record{tensors=[],facts=["rejected"]}
+    row ShapeCase record{operation=ReshapeShape,left=[2,3],right=[],target=[-1,2],dtype=ShapeFloat32,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[3, 2]", "float32"]}
+    row ShapeCase record{operation=ReshapeShape,left=[0,3],right=[],target=[0,3],dtype=ShapeFloat32,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[0, 3]", "float32"]}
+    row ShapeCase record{operation=ReshapeShape,left=[0,3],right=[],target=[-1,0],dtype=ShapeFloat32,axis=AllAxes}, Observation record{tensors=[],facts=["rejected"]}
+    row ShapeCase record{operation=ReshapeShape,left=[],right=[],target=[],dtype=ShapeFloat32,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[]", "float32"]}
+    row ShapeCase record{operation=ReshapeShape,left=[2,3],right=[],target=[4,-1],dtype=ShapeFloat32,axis=AllAxes}, Observation record{tensors=[],facts=["rejected"]}
+    row ShapeCase record{operation=ReshapeShape,left=[2,3],right=[],target=[-1,-1],dtype=ShapeFloat32,axis=AllAxes}, Observation record{tensors=[],facts=["rejected"]}
+    row ShapeCase record{operation=SumShape,left=[],right=[],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[]", "float64"]}
+    row ShapeCase record{operation=SumShape,left=[],right=[],target=[],dtype=ShapeFloat64,axis=FirstAxis}, Observation record{tensors=[],facts=["accepted", "[]", "float64"]}
+    row ShapeCase record{operation=SumShape,left=[],right=[],target=[],dtype=ShapeFloat64,axis=LastAxis}, Observation record{tensors=[],facts=["accepted", "[]", "float64"]}
+    row ShapeCase record{operation=SumShape,left=[],right=[],target=[],dtype=ShapeFloat64,axis=EmptyAxes}, Observation record{tensors=[],facts=["accepted", "[]", "float64"]}
+    row ShapeCase record{operation=MeanShape,left=[],right=[],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[]", "float64"]}
+    row ShapeCase record{operation=MeanShape,left=[],right=[],target=[],dtype=ShapeFloat64,axis=FirstAxis}, Observation record{tensors=[],facts=["accepted", "[]", "float64"]}
+    row ShapeCase record{operation=MeanShape,left=[],right=[],target=[],dtype=ShapeFloat64,axis=LastAxis}, Observation record{tensors=[],facts=["accepted", "[]", "float64"]}
+    row ShapeCase record{operation=MeanShape,left=[],right=[],target=[],dtype=ShapeFloat64,axis=EmptyAxes}, Observation record{tensors=[],facts=["accepted", "[]", "float64"]}
+    row ShapeCase record{operation=MaximumShape,left=[],right=[],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[]", "float64"]}
+    row ShapeCase record{operation=MaximumShape,left=[],right=[],target=[],dtype=ShapeFloat64,axis=FirstAxis}, Observation record{tensors=[],facts=["accepted", "[]", "float64"]}
+    row ShapeCase record{operation=MaximumShape,left=[],right=[],target=[],dtype=ShapeFloat64,axis=LastAxis}, Observation record{tensors=[],facts=["accepted", "[]", "float64"]}
+    row ShapeCase record{operation=MaximumShape,left=[],right=[],target=[],dtype=ShapeFloat64,axis=EmptyAxes}, Observation record{tensors=[],facts=["accepted", "[]", "float64"]}
+    row ShapeCase record{operation=MinimumShape,left=[],right=[],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[]", "float64"]}
+    row ShapeCase record{operation=MinimumShape,left=[],right=[],target=[],dtype=ShapeFloat64,axis=FirstAxis}, Observation record{tensors=[],facts=["accepted", "[]", "float64"]}
+    row ShapeCase record{operation=MinimumShape,left=[],right=[],target=[],dtype=ShapeFloat64,axis=LastAxis}, Observation record{tensors=[],facts=["accepted", "[]", "float64"]}
+    row ShapeCase record{operation=MinimumShape,left=[],right=[],target=[],dtype=ShapeFloat64,axis=EmptyAxes}, Observation record{tensors=[],facts=["accepted", "[]", "float64"]}
+    row ShapeCase record{operation=SumShape,left=[0,3],right=[],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[]", "float64"]}
+    row ShapeCase record{operation=SumShape,left=[0,3],right=[],target=[],dtype=ShapeFloat64,axis=FirstAxis}, Observation record{tensors=[],facts=["accepted", "[3]", "float64"]}
+    row ShapeCase record{operation=SumShape,left=[0,3],right=[],target=[],dtype=ShapeFloat64,axis=LastAxis}, Observation record{tensors=[],facts=["accepted", "[0]", "float64"]}
+    row ShapeCase record{operation=SumShape,left=[0,3],right=[],target=[],dtype=ShapeFloat64,axis=EmptyAxes}, Observation record{tensors=[],facts=["accepted", "[]", "float64"]}
+    row ShapeCase record{operation=MeanShape,left=[0,3],right=[],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[]", "float64"]}
+    row ShapeCase record{operation=MeanShape,left=[0,3],right=[],target=[],dtype=ShapeFloat64,axis=FirstAxis}, Observation record{tensors=[],facts=["accepted", "[3]", "float64"]}
+    row ShapeCase record{operation=MeanShape,left=[0,3],right=[],target=[],dtype=ShapeFloat64,axis=LastAxis}, Observation record{tensors=[],facts=["accepted", "[0]", "float64"]}
+    row ShapeCase record{operation=MeanShape,left=[0,3],right=[],target=[],dtype=ShapeFloat64,axis=EmptyAxes}, Observation record{tensors=[],facts=["accepted", "[]", "float64"]}
+    row ShapeCase record{operation=MaximumShape,left=[0,3],right=[],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["rejected"]}
+    row ShapeCase record{operation=MaximumShape,left=[0,3],right=[],target=[],dtype=ShapeFloat64,axis=FirstAxis}, Observation record{tensors=[],facts=["rejected"]}
+    row ShapeCase record{operation=MaximumShape,left=[0,3],right=[],target=[],dtype=ShapeFloat64,axis=LastAxis}, Observation record{tensors=[],facts=["accepted", "[0]", "float64"]}
+    row ShapeCase record{operation=MaximumShape,left=[0,3],right=[],target=[],dtype=ShapeFloat64,axis=EmptyAxes}, Observation record{tensors=[],facts=["rejected"]}
+    row ShapeCase record{operation=MinimumShape,left=[0,3],right=[],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["rejected"]}
+    row ShapeCase record{operation=MinimumShape,left=[0,3],right=[],target=[],dtype=ShapeFloat64,axis=FirstAxis}, Observation record{tensors=[],facts=["rejected"]}
+    row ShapeCase record{operation=MinimumShape,left=[0,3],right=[],target=[],dtype=ShapeFloat64,axis=LastAxis}, Observation record{tensors=[],facts=["accepted", "[0]", "float64"]}
+    row ShapeCase record{operation=MinimumShape,left=[0,3],right=[],target=[],dtype=ShapeFloat64,axis=EmptyAxes}, Observation record{tensors=[],facts=["rejected"]}
+    row ShapeCase record{operation=SumShape,left=[2,0,3],right=[],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[]", "float64"]}
+    row ShapeCase record{operation=SumShape,left=[2,0,3],right=[],target=[],dtype=ShapeFloat64,axis=FirstAxis}, Observation record{tensors=[],facts=["accepted", "[0, 3]", "float64"]}
+    row ShapeCase record{operation=SumShape,left=[2,0,3],right=[],target=[],dtype=ShapeFloat64,axis=LastAxis}, Observation record{tensors=[],facts=["accepted", "[2, 0]", "float64"]}
+    row ShapeCase record{operation=SumShape,left=[2,0,3],right=[],target=[],dtype=ShapeFloat64,axis=EmptyAxes}, Observation record{tensors=[],facts=["accepted", "[]", "float64"]}
+    row ShapeCase record{operation=MeanShape,left=[2,0,3],right=[],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[]", "float64"]}
+    row ShapeCase record{operation=MeanShape,left=[2,0,3],right=[],target=[],dtype=ShapeFloat64,axis=FirstAxis}, Observation record{tensors=[],facts=["accepted", "[0, 3]", "float64"]}
+    row ShapeCase record{operation=MeanShape,left=[2,0,3],right=[],target=[],dtype=ShapeFloat64,axis=LastAxis}, Observation record{tensors=[],facts=["accepted", "[2, 0]", "float64"]}
+    row ShapeCase record{operation=MeanShape,left=[2,0,3],right=[],target=[],dtype=ShapeFloat64,axis=EmptyAxes}, Observation record{tensors=[],facts=["accepted", "[]", "float64"]}
+    row ShapeCase record{operation=MaximumShape,left=[2,0,3],right=[],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["rejected"]}
+    row ShapeCase record{operation=MaximumShape,left=[2,0,3],right=[],target=[],dtype=ShapeFloat64,axis=FirstAxis}, Observation record{tensors=[],facts=["accepted", "[0, 3]", "float64"]}
+    row ShapeCase record{operation=MaximumShape,left=[2,0,3],right=[],target=[],dtype=ShapeFloat64,axis=LastAxis}, Observation record{tensors=[],facts=["accepted", "[2, 0]", "float64"]}
+    row ShapeCase record{operation=MaximumShape,left=[2,0,3],right=[],target=[],dtype=ShapeFloat64,axis=EmptyAxes}, Observation record{tensors=[],facts=["rejected"]}
+    row ShapeCase record{operation=MinimumShape,left=[2,0,3],right=[],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["rejected"]}
+    row ShapeCase record{operation=MinimumShape,left=[2,0,3],right=[],target=[],dtype=ShapeFloat64,axis=FirstAxis}, Observation record{tensors=[],facts=["accepted", "[0, 3]", "float64"]}
+    row ShapeCase record{operation=MinimumShape,left=[2,0,3],right=[],target=[],dtype=ShapeFloat64,axis=LastAxis}, Observation record{tensors=[],facts=["accepted", "[2, 0]", "float64"]}
+    row ShapeCase record{operation=MinimumShape,left=[2,0,3],right=[],target=[],dtype=ShapeFloat64,axis=EmptyAxes}, Observation record{tensors=[],facts=["rejected"]}
+    row ShapeCase record{operation=SumShape,left=[2,3],right=[],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[]", "float64"]}
+    row ShapeCase record{operation=SumShape,left=[2,3],right=[],target=[],dtype=ShapeFloat64,axis=FirstAxis}, Observation record{tensors=[],facts=["accepted", "[3]", "float64"]}
+    row ShapeCase record{operation=SumShape,left=[2,3],right=[],target=[],dtype=ShapeFloat64,axis=LastAxis}, Observation record{tensors=[],facts=["accepted", "[2]", "float64"]}
+    row ShapeCase record{operation=SumShape,left=[2,3],right=[],target=[],dtype=ShapeFloat64,axis=EmptyAxes}, Observation record{tensors=[],facts=["accepted", "[]", "float64"]}
+    row ShapeCase record{operation=MeanShape,left=[2,3],right=[],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[]", "float64"]}
+    row ShapeCase record{operation=MeanShape,left=[2,3],right=[],target=[],dtype=ShapeFloat64,axis=FirstAxis}, Observation record{tensors=[],facts=["accepted", "[3]", "float64"]}
+    row ShapeCase record{operation=MeanShape,left=[2,3],right=[],target=[],dtype=ShapeFloat64,axis=LastAxis}, Observation record{tensors=[],facts=["accepted", "[2]", "float64"]}
+    row ShapeCase record{operation=MeanShape,left=[2,3],right=[],target=[],dtype=ShapeFloat64,axis=EmptyAxes}, Observation record{tensors=[],facts=["accepted", "[]", "float64"]}
+    row ShapeCase record{operation=MaximumShape,left=[2,3],right=[],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[]", "float64"]}
+    row ShapeCase record{operation=MaximumShape,left=[2,3],right=[],target=[],dtype=ShapeFloat64,axis=FirstAxis}, Observation record{tensors=[],facts=["accepted", "[3]", "float64"]}
+    row ShapeCase record{operation=MaximumShape,left=[2,3],right=[],target=[],dtype=ShapeFloat64,axis=LastAxis}, Observation record{tensors=[],facts=["accepted", "[2]", "float64"]}
+    row ShapeCase record{operation=MaximumShape,left=[2,3],right=[],target=[],dtype=ShapeFloat64,axis=EmptyAxes}, Observation record{tensors=[],facts=["accepted", "[]", "float64"]}
+    row ShapeCase record{operation=MinimumShape,left=[2,3],right=[],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[]", "float64"]}
+    row ShapeCase record{operation=MinimumShape,left=[2,3],right=[],target=[],dtype=ShapeFloat64,axis=FirstAxis}, Observation record{tensors=[],facts=["accepted", "[3]", "float64"]}
+    row ShapeCase record{operation=MinimumShape,left=[2,3],right=[],target=[],dtype=ShapeFloat64,axis=LastAxis}, Observation record{tensors=[],facts=["accepted", "[2]", "float64"]}
+    row ShapeCase record{operation=MinimumShape,left=[2,3],right=[],target=[],dtype=ShapeFloat64,axis=EmptyAxes}, Observation record{tensors=[],facts=["accepted", "[]", "float64"]}
+    row ShapeCase record{operation=ExpShape,left=[2,3],right=[],target=[],dtype=ShapeFloat32,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[2, 3]", "float32"]}
+    row ShapeCase record{operation=SqrtShape,left=[2,3],right=[],target=[],dtype=ShapeFloat32,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[2, 3]", "float32"]}
+    row ShapeCase record{operation=SumShape,left=[2,3],right=[],target=[],dtype=ShapeFloat32,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[]", "float32"]}
+    row ShapeCase record{operation=DivideShape,left=[2,3],right=[2,3],target=[],dtype=ShapeFloat32,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[2, 3]", "float32"]}
+    row ShapeCase record{operation=ExpShape,left=[2,3],right=[],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[2, 3]", "float64"]}
+    row ShapeCase record{operation=SqrtShape,left=[2,3],right=[],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[2, 3]", "float64"]}
+    row ShapeCase record{operation=SumShape,left=[2,3],right=[],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[]", "float64"]}
+    row ShapeCase record{operation=DivideShape,left=[2,3],right=[2,3],target=[],dtype=ShapeFloat64,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[2, 3]", "float64"]}
+    row ShapeCase record{operation=ExpShape,left=[2,3],right=[],target=[],dtype=ShapeInt64,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[2, 3]", "float32"]}
+    row ShapeCase record{operation=SqrtShape,left=[2,3],right=[],target=[],dtype=ShapeInt64,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[2, 3]", "float32"]}
+    row ShapeCase record{operation=SumShape,left=[2,3],right=[],target=[],dtype=ShapeInt64,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[]", "int64"]}
+    row ShapeCase record{operation=DivideShape,left=[2,3],right=[2,3],target=[],dtype=ShapeInt64,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[2, 3]", "float32"]}
+    row ShapeCase record{operation=ExpShape,left=[2,3],right=[],target=[],dtype=ShapeBool,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[2, 3]", "float32"]}
+    row ShapeCase record{operation=SqrtShape,left=[2,3],right=[],target=[],dtype=ShapeBool,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[2, 3]", "float32"]}
+    row ShapeCase record{operation=SumShape,left=[2,3],right=[],target=[],dtype=ShapeBool,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[]", "int64"]}
+    row ShapeCase record{operation=DivideShape,left=[2,3],right=[2,3],target=[],dtype=ShapeBool,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[2, 3]", "float32"]}
+    row ShapeCase record{operation=MatmulShape,left=[0, 0],right=[0, 0],target=[],dtype=ShapeBool,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[0, 0]", "bool"]}
+    row ShapeCase record{operation=MatmulShape,left=[2, 0],right=[0, 3],target=[],dtype=ShapeBool,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[2, 3]", "bool"]}
+    row ShapeCase record{operation=MatmulShape,left=[0, 2],right=[2, 3],target=[],dtype=ShapeBool,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[0, 3]", "bool"]}
+    row ShapeCase record{operation=MatmulShape,left=[0],right=[0],target=[],dtype=ShapeBool,axis=AllAxes}, Observation record{tensors=[],facts=["rejected"]}
+    row ShapeCase record{operation=MatmulShape,left=[2, 2],right=[2, 2],target=[],dtype=ShapeBool,axis=AllAxes}, Observation record{tensors=[],facts=["rejected"]}
+    row ShapeCase record{operation=MatmulShape,left=[0],right=[0, 2],target=[],dtype=ShapeBool,axis=AllAxes}, Observation record{tensors=[],facts=["accepted", "[2]", "bool"]}
+  end table
+end law
+
+law "|comparison distinguishes nonfinite values and rejects missing tensor values| is
+  definition:
+    closeSample NotANumber NotANumber 0 0 and
+    not (closeSample PositiveInfinity NegativeInfinity 0 0) and
+    not (closeSamples [] [Finite 1] 0 0) and
+    not (closeSamples [Finite 1] [] 0 0) and
+    closeSample (Finite 1) (Finite 1) 0 0
+  end definition
+end law
+end unit

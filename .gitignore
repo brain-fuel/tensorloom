@@ -1,0 +1,15 @@
+/_build/
+/deps/
+/cover/
+/doc/
+/erl_crash.dump
+/priv/lawspec/
+/.venv/
+.lawspec/
+.pytest_cache/
+/.ricestax/
+/.canon-cache/
+__pycache__/
+*.pyc
+/artifacts/
+.hypothesis/

@@ -1,0 +1,749 @@
+{:manifest-version 1
+:component {:name "tensorloom-pytorch"
+:version "0.2.0"}
+:language-profile "1.0-rc.2"
+:verification {:layers [:examples
+:property
+:exhaustive]}
+:generation {:cases 8
+:max-attempts 10000
+:max-shrinks 1000
+:exhaustive-limit 512}
+:sources ["laws"]
+:inputs ["tensorloom"
+"../lib"
+"../priv/operations.json"]
+:targets [{:language :python
+:root "."
+:python "../.venv/bin/python"
+:source-dir "lawspec_generated"
+:test-dir "lawspec_tests"
+:native-bindings {:types [{:type "tensorloom_contracts.conformance::type::Lowering"
+:native ["tensorloom"
+"law_domain"
+"Lowering"]
+:constructors [{:constructor "Native"
+:native ["tensorloom"
+"law_domain"
+"Native"]
+:style "unit"
+:fields []}
+{:constructor "Expanded"
+:native ["tensorloom"
+"law_domain"
+"Expanded"]
+:style "unit"
+:fields []}]}
+{:type "tensorloom_contracts.conformance::type::Precision"
+:native ["tensorloom"
+"law_domain"
+"Precision"]
+:constructors [{:constructor "Float32"
+:native ["tensorloom"
+"law_domain"
+"Float32"]
+:style "unit"
+:fields []}
+{:constructor "Float64"
+:native ["tensorloom"
+"law_domain"
+"Float64"]
+:style "unit"
+:fields []}]}
+{:type "tensorloom_contracts.conformance::type::Kernel"
+:native ["tensorloom"
+"law_domain"
+"Kernel"]
+:constructors [{:constructor "Mlp"
+:native ["tensorloom"
+"law_domain"
+"Mlp"]
+:style "unit"
+:fields []}
+{:constructor "Convolution"
+:native ["tensorloom"
+"law_domain"
+"Convolution"]
+:style "unit"
+:fields []}
+{:constructor "Normalization"
+:native ["tensorloom"
+"law_domain"
+"Normalization"]
+:style "unit"
+:fields []}
+{:constructor "Softmax"
+:native ["tensorloom"
+"law_domain"
+"Softmax"]
+:style "unit"
+:fields []}
+{:constructor "MaxPool"
+:native ["tensorloom"
+"law_domain"
+"MaxPool"]
+:style "unit"
+:fields []}
+{:constructor "AverageExcludePad"
+:native ["tensorloom"
+"law_domain"
+"AverageExcludePad"]
+:style "unit"
+:fields []}
+{:constructor "AverageIncludePad"
+:native ["tensorloom"
+"law_domain"
+"AverageIncludePad"]
+:style "unit"
+:fields []}]}
+{:type "tensorloom_contracts.conformance::type::Cell"
+:native ["tensorloom"
+"law_domain"
+"Cell"]
+:constructors [{:constructor "Rnn"
+:native ["tensorloom"
+"law_domain"
+"Rnn"]
+:style "unit"
+:fields []}
+{:constructor "Gru"
+:native ["tensorloom"
+"law_domain"
+"Gru"]
+:style "unit"
+:fields []}
+{:constructor "Lstm"
+:native ["tensorloom"
+"law_domain"
+"Lstm"]
+:style "unit"
+:fields []}]}
+{:type "tensorloom_contracts.conformance::type::Mask"
+:native ["tensorloom"
+"law_domain"
+"Mask"]
+:constructors [{:constructor "BooleanMask"
+:native ["tensorloom"
+"law_domain"
+"BooleanMask"]
+:style "unit"
+:fields []}
+{:constructor "AdditiveMask"
+:native ["tensorloom"
+"law_domain"
+"AdditiveMask"]
+:style "unit"
+:fields []}
+{:constructor "CausalMask"
+:native ["tensorloom"
+"law_domain"
+"CausalMask"]
+:style "unit"
+:fields []}
+{:constructor "FullyMasked"
+:native ["tensorloom"
+"law_domain"
+"FullyMasked"]
+:style "unit"
+:fields []}]}
+{:type "tensorloom_contracts.conformance::type::Expansion"
+:native ["tensorloom"
+"law_domain"
+"Expansion"]
+:constructors [{:constructor "LinearExpansion"
+:native ["tensorloom"
+"law_domain"
+"LinearExpansion"]
+:style "unit"
+:fields []}
+{:constructor "SoftmaxExpansion"
+:native ["tensorloom"
+"law_domain"
+"SoftmaxExpansion"]
+:style "unit"
+:fields []}
+{:constructor "EmptySoftmaxExpansion"
+:native ["tensorloom"
+"law_domain"
+"EmptySoftmaxExpansion"]
+:style "unit"
+:fields []}
+{:constructor "ConvExpansion"
+:native ["tensorloom"
+"law_domain"
+"ConvExpansion"]
+:style "unit"
+:fields []}
+{:constructor "MaxPoolExpansion"
+:native ["tensorloom"
+"law_domain"
+"MaxPoolExpansion"]
+:style "unit"
+:fields []}
+{:constructor "AvgPoolExpansion"
+:native ["tensorloom"
+"law_domain"
+"AvgPoolExpansion"]
+:style "unit"
+:fields []}
+{:constructor "LayerNormExpansion"
+:native ["tensorloom"
+"law_domain"
+"LayerNormExpansion"]
+:style "unit"
+:fields []}
+{:constructor "BatchNormExpansion"
+:native ["tensorloom"
+"law_domain"
+"BatchNormExpansion"]
+:style "unit"
+:fields []}
+{:constructor "AttentionExpansion"
+:native ["tensorloom"
+"law_domain"
+"AttentionExpansion"]
+:style "unit"
+:fields []}
+{:constructor "DropoutExpansion"
+:native ["tensorloom"
+"law_domain"
+"DropoutExpansion"]
+:style "unit"
+:fields []}]}
+{:type "tensorloom_contracts.conformance::type::ImportedLibrary"
+:native ["tensorloom"
+"law_domain"
+"ImportedLibrary"]
+:constructors [{:constructor "ImportedBatchNorm"
+:native ["tensorloom"
+"law_domain"
+"ImportedBatchNorm"]
+:style "unit"
+:fields []}
+{:constructor "ImportedEmbedding"
+:native ["tensorloom"
+"law_domain"
+"ImportedEmbedding"]
+:style "unit"
+:fields []}
+{:constructor "ImportedPool"
+:native ["tensorloom"
+"law_domain"
+"ImportedPool"]
+:style "unit"
+:fields []}]}
+{:type "tensorloom_contracts.conformance::type::Rejection"
+:native ["tensorloom"
+"law_domain"
+"Rejection"]
+:constructors [{:constructor "DynamicCapture"
+:native ["tensorloom"
+"law_domain"
+"DynamicCapture"]
+:style "unit"
+:fields []}
+{:constructor "UnknownCapture"
+:native ["tensorloom"
+"law_domain"
+"UnknownCapture"]
+:style "unit"
+:fields []}
+{:constructor "WrongRank"
+:native ["tensorloom"
+"law_domain"
+"WrongRank"]
+:style "unit"
+:fields []}
+{:constructor "WrongDtype"
+:native ["tensorloom"
+"law_domain"
+"WrongDtype"]
+:style "unit"
+:fields []}]}
+{:type "tensorloom_contracts.conformance::type::Mutation"
+:native ["tensorloom"
+"law_domain"
+"Mutation"]
+:constructors [{:constructor "ReverseMask"
+:native ["tensorloom"
+"law_domain"
+"ReverseMask"]
+:style "unit"
+:fields []}
+{:constructor "DuplicateParameter"
+:native ["tensorloom"
+"law_domain"
+"DuplicateParameter"]
+:style "unit"
+:fields []}
+{:constructor "BiasedVariance"
+:native ["tensorloom"
+"law_domain"
+"BiasedVariance"]
+:style "unit"
+:fields []}
+{:constructor "ExecuteBothBranches"
+:native ["tensorloom"
+"law_domain"
+"ExecuteBothBranches"]
+:style "unit"
+:fields []}]}
+{:type "tensorloom_contracts.conformance::type::ShapeOperation"
+:native ["tensorloom"
+"law_domain"
+"ShapeOperation"]
+:constructors [{:constructor "BroadcastShape"
+:native ["tensorloom"
+"law_domain"
+"BroadcastShape"]
+:style "unit"
+:fields []}
+{:constructor "MatmulShape"
+:native ["tensorloom"
+"law_domain"
+"MatmulShape"]
+:style "unit"
+:fields []}
+{:constructor "ReshapeShape"
+:native ["tensorloom"
+"law_domain"
+"ReshapeShape"]
+:style "unit"
+:fields []}
+{:constructor "SumShape"
+:native ["tensorloom"
+"law_domain"
+"SumShape"]
+:style "unit"
+:fields []}
+{:constructor "MeanShape"
+:native ["tensorloom"
+"law_domain"
+"MeanShape"]
+:style "unit"
+:fields []}
+{:constructor "MaximumShape"
+:native ["tensorloom"
+"law_domain"
+"MaximumShape"]
+:style "unit"
+:fields []}
+{:constructor "MinimumShape"
+:native ["tensorloom"
+"law_domain"
+"MinimumShape"]
+:style "unit"
+:fields []}
+{:constructor "ExpShape"
+:native ["tensorloom"
+"law_domain"
+"ExpShape"]
+:style "unit"
+:fields []}
+{:constructor "SqrtShape"
+:native ["tensorloom"
+"law_domain"
+"SqrtShape"]
+:style "unit"
+:fields []}
+{:constructor "DivideShape"
+:native ["tensorloom"
+"law_domain"
+"DivideShape"]
+:style "unit"
+:fields []}]}
+{:type "tensorloom_contracts.conformance::type::ShapeDtype"
+:native ["tensorloom"
+"law_domain"
+"ShapeDtype"]
+:constructors [{:constructor "ShapeFloat32"
+:native ["tensorloom"
+"law_domain"
+"ShapeFloat32"]
+:style "unit"
+:fields []}
+{:constructor "ShapeFloat64"
+:native ["tensorloom"
+"law_domain"
+"ShapeFloat64"]
+:style "unit"
+:fields []}
+{:constructor "ShapeInt64"
+:native ["tensorloom"
+"law_domain"
+"ShapeInt64"]
+:style "unit"
+:fields []}
+{:constructor "ShapeBool"
+:native ["tensorloom"
+"law_domain"
+"ShapeBool"]
+:style "unit"
+:fields []}]}
+{:type "tensorloom_contracts.conformance::type::AxisChoice"
+:native ["tensorloom"
+"law_domain"
+"AxisChoice"]
+:constructors [{:constructor "AllAxes"
+:native ["tensorloom"
+"law_domain"
+"AllAxes"]
+:style "unit"
+:fields []}
+{:constructor "FirstAxis"
+:native ["tensorloom"
+"law_domain"
+"FirstAxis"]
+:style "unit"
+:fields []}
+{:constructor "LastAxis"
+:native ["tensorloom"
+"law_domain"
+"LastAxis"]
+:style "unit"
+:fields []}
+{:constructor "EmptyAxes"
+:native ["tensorloom"
+"law_domain"
+"EmptyAxes"]
+:style "unit"
+:fields []}]}
+{:type "tensorloom_contracts.conformance::type::Sample"
+:native ["tensorloom"
+"law_domain"
+"Sample"]
+:constructors [{:constructor "Finite"
+:native ["tensorloom"
+"law_domain"
+"Finite"]
+:style "variant"
+:fields [{:field "value"
+:native "value"}]}
+{:constructor "NotANumber"
+:native ["tensorloom"
+"law_domain"
+"NotANumber"]
+:style "unit"
+:fields []}
+{:constructor "PositiveInfinity"
+:native ["tensorloom"
+"law_domain"
+"PositiveInfinity"]
+:style "unit"
+:fields []}
+{:constructor "NegativeInfinity"
+:native ["tensorloom"
+"law_domain"
+"NegativeInfinity"]
+:style "unit"
+:fields []}]}
+{:type "tensorloom_contracts.conformance::type::KernelCase"
+:native ["tensorloom"
+"law_domain"
+"KernelCase"]
+:constructors [{:constructor "KernelCase"
+:native ["tensorloom"
+"law_domain"
+"KernelCase"]
+:style "record"
+:fields [{:field "kernel"
+:native "kernel"}
+{:field "precision"
+:native "precision"}
+{:field "lowering"
+:native "lowering"}]}]}
+{:type "tensorloom_contracts.conformance::type::SharedCase"
+:native ["tensorloom"
+"law_domain"
+"SharedCase"]
+:constructors [{:constructor "SharedCase"
+:native ["tensorloom"
+"law_domain"
+"SharedCase"]
+:style "record"
+:fields [{:field "precision"
+:native "precision"}
+{:field "lowering"
+:native "lowering"}]}]}
+{:type "tensorloom_contracts.conformance::type::CellCase"
+:native ["tensorloom"
+"law_domain"
+"CellCase"]
+:constructors [{:constructor "CellCase"
+:native ["tensorloom"
+"law_domain"
+"CellCase"]
+:style "record"
+:fields [{:field "cell"
+:native "cell"}
+{:field "lowering"
+:native "lowering"}]}]}
+{:type "tensorloom_contracts.conformance::type::AttentionCase"
+:native ["tensorloom"
+"law_domain"
+"AttentionCase"]
+:constructors [{:constructor "AttentionCase"
+:native ["tensorloom"
+"law_domain"
+"AttentionCase"]
+:style "record"
+:fields [{:field "mask"
+:native "mask"}
+{:field "precision"
+:native "precision"}
+{:field "lowering"
+:native "lowering"}]}]}
+{:type "tensorloom_contracts.conformance::type::ExpansionCase"
+:native ["tensorloom"
+"law_domain"
+"ExpansionCase"]
+:constructors [{:constructor "ExpansionCase"
+:native ["tensorloom"
+"law_domain"
+"ExpansionCase"]
+:style "record"
+:fields [{:field "expansion"
+:native "expansion"}
+{:field "lowering"
+:native "lowering"}]}]}
+{:type "tensorloom_contracts.conformance::type::ImportCase"
+:native ["tensorloom"
+"law_domain"
+"ImportCase"]
+:constructors [{:constructor "ImportCase"
+:native ["tensorloom"
+"law_domain"
+"ImportCase"]
+:style "record"
+:fields [{:field "library"
+:native "library"}
+{:field "lowering"
+:native "lowering"}]}]}
+{:type "tensorloom_contracts.conformance::type::ShapeCase"
+:native ["tensorloom"
+"law_domain"
+"ShapeCase"]
+:constructors [{:constructor "ShapeCase"
+:native ["tensorloom"
+"law_domain"
+"ShapeCase"]
+:style "record"
+:fields [{:field "operation"
+:native "operation"}
+{:field "left"
+:native "left"}
+{:field "right"
+:native "right"}
+{:field "target"
+:native "target"}
+{:field "dtype"
+:native "dtype"}
+{:field "axis"
+:native "axis"}]}]}
+{:type "tensorloom_contracts.conformance::type::TensorObservation"
+:native ["tensorloom"
+"law_domain"
+"TensorObservation"]
+:constructors [{:constructor "TensorObservation"
+:native ["tensorloom"
+"law_domain"
+"TensorObservation"]
+:style "record"
+:fields [{:field "path"
+:native "path"}
+{:field "shape"
+:native "shape"}
+{:field "dtype"
+:native "dtype"}
+{:field "samples"
+:native "samples"}]}]}
+{:type "tensorloom_contracts.conformance::type::Observation"
+:native ["tensorloom"
+"law_domain"
+"Observation"]
+:constructors [{:constructor "Observation"
+:native ["tensorloom"
+"law_domain"
+"Observation"]
+:style "record"
+:fields [{:field "tensors"
+:native "tensors"}
+{:field "facts"
+:native "facts"}]}]}
+{:type "tensorloom_contracts.conformance::type::ConformanceCase"
+:native ["tensorloom"
+"law_domain"
+"ConformanceCase"]
+:constructors [{:constructor "ModuleExecution"
+:native ["tensorloom"
+"law_domain"
+"ModuleExecution"]
+:style "variant"
+:fields [{:field "value"
+:native "value"}]}
+{:constructor "SharedExecution"
+:native ["tensorloom"
+"law_domain"
+"SharedExecution"]
+:style "variant"
+:fields [{:field "value"
+:native "value"}]}
+{:constructor "BatchState"
+:native ["tensorloom"
+"law_domain"
+"BatchState"]
+:style "variant"
+:fields [{:field "value"
+:native "value"}]}
+{:constructor "CellExecution"
+:native ["tensorloom"
+"law_domain"
+"CellExecution"]
+:style "variant"
+:fields [{:field "value"
+:native "value"}]}
+{:constructor "EmbeddingExecution"
+:native ["tensorloom"
+"law_domain"
+"EmbeddingExecution"]
+:style "variant"
+:fields [{:field "value"
+:native "value"}]}
+{:constructor "AttentionExecution"
+:native ["tensorloom"
+"law_domain"
+"AttentionExecution"]
+:style "variant"
+:fields [{:field "value"
+:native "value"}]}
+{:constructor "DropoutExecution"
+:native ["tensorloom"
+"law_domain"
+"DropoutExecution"]
+:style "variant"
+:fields [{:field "value"
+:native "value"}]}
+{:constructor "SoftmaxBoundaries"
+:native ["tensorloom"
+"law_domain"
+"SoftmaxBoundaries"]
+:style "variant"
+:fields [{:field "value"
+:native "value"}]}
+{:constructor "ControlExecution"
+:native ["tensorloom"
+"law_domain"
+"ControlExecution"]
+:style "variant"
+:fields [{:field "value"
+:native "value"}]}
+{:constructor "CollapseExecution"
+:native ["tensorloom"
+"law_domain"
+"CollapseExecution"]
+:style "variant"
+:fields [{:field "value"
+:native "value"}]}
+{:constructor "SavedExport"
+:native ["tensorloom"
+"law_domain"
+"SavedExport"]
+:style "variant"
+:fields [{:field "value"
+:native "value"}]}
+{:constructor "CapturedExport"
+:native ["tensorloom"
+"law_domain"
+"CapturedExport"]
+:style "variant"
+:fields [{:field "value"
+:native "value"}]}
+{:constructor "RejectedExecution"
+:native ["tensorloom"
+"law_domain"
+"RejectedExecution"]
+:style "variant"
+:fields [{:field "value"
+:native "value"}]}
+{:constructor "SequenceExecution"
+:native ["tensorloom"
+"law_domain"
+"SequenceExecution"]
+:style "variant"
+:fields [{:field "value"
+:native "value"}]}
+{:constructor "ExpandedExecution"
+:native ["tensorloom"
+"law_domain"
+"ExpandedExecution"]
+:style "variant"
+:fields [{:field "value"
+:native "value"}]}
+{:constructor "SavedConditional"
+:native ["tensorloom"
+"law_domain"
+"SavedConditional"]
+:style "variant"
+:fields [{:field "value"
+:native "value"}]}
+{:constructor "SavedRecurrence"
+:native ["tensorloom"
+"law_domain"
+"SavedRecurrence"]
+:style "variant"
+:fields [{:field "value"
+:native "value"}]}
+{:constructor "CapturedConditional"
+:native ["tensorloom"
+"law_domain"
+"CapturedConditional"]
+:style "variant"
+:fields [{:field "value"
+:native "value"}]}
+{:constructor "ImportedExecution"
+:native ["tensorloom"
+"law_domain"
+"ImportedExecution"]
+:style "variant"
+:fields [{:field "value"
+:native "value"}]}
+{:constructor "NamedAxes"
+:native ["tensorloom"
+"law_domain"
+"NamedAxes"]
+:style "unit"
+:fields []}
+{:constructor "FrozenState"
+:native ["tensorloom"
+"law_domain"
+"FrozenState"]
+:style "unit"
+:fields []}]}]
+:functions [{:declaration "tensorloom_contracts.conformance::observe"
+:native ["tensorloom"
+"law_native"
+"observe"]}
+{:declaration "tensorloom_contracts.conformance::reference"
+:native ["tensorloom"
+"law_native"
+"reference"]}
+{:declaration "tensorloom_contracts.conformance::mutated"
+:native ["tensorloom"
+"law_native"
+"mutated"]}
+{:declaration "tensorloom_contracts.conformance::mutationReference"
+:native ["tensorloom"
+"law_native"
+"mutation_reference"]}
+{:declaration "tensorloom_contracts.conformance::inferShape"
+:native ["tensorloom"
+"law_native"
+"infer_shape"]}
+{:declaration "tensorloom_contracts.conformance::referenceShape"
+:native ["tensorloom"
+"law_native"
+"reference_shape"]}]
+:generators [{:type "tensorloom_contracts.conformance::type::ShapeCase"
+:factory ["tensorloom"
+"law_generators"
+"shapes"]}]}}]}

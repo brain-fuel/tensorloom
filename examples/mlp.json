@@ -1,0 +1,192 @@
+{
+  "version": 1,
+  "inputs": [
+    {
+      "id": "input_1",
+      "type": {
+        "kind": "tensor",
+        "shape": [
+          2,
+          3
+        ],
+        "dtype": "float64",
+        "device": "cpu",
+        "layout": "strided",
+        "axes": [
+          null,
+          null
+        ]
+      }
+    }
+  ],
+  "state": [
+    {
+      "id": "state:0.weight",
+      "kind": "parameter",
+      "type": {
+        "kind": "tensor",
+        "shape": [
+          4,
+          3
+        ],
+        "dtype": "float64",
+        "device": "cpu",
+        "layout": "strided",
+        "axes": [
+          null,
+          null
+        ]
+      },
+      "data": [
+        [
+          -0.10064519941806793,
+          -0.10747916251420975,
+          -0.4752283990383148
+        ],
+        [
+          -0.10467479377985,
+          0.47435206174850464,
+          -0.5123177766799927
+        ],
+        [
+          0.41020116209983826,
+          0.3257645070552826,
+          -0.3968379497528076
+        ],
+        [
+          -0.2360665649175644,
+          -0.1706969141960144,
+          -0.2409219890832901
+        ]
+      ]
+    },
+    {
+      "id": "state:0.bias",
+      "kind": "parameter",
+      "type": {
+        "kind": "tensor",
+        "shape": [
+          4
+        ],
+        "dtype": "float64",
+        "device": "cpu",
+        "layout": "strided",
+        "axes": [
+          null
+        ]
+      },
+      "data": [
+        -0.2925644516944885,
+        0.5145159959793091,
+        0.29572147130966187,
+        0.010961908847093582
+      ]
+    },
+    {
+      "id": "state:2.weight",
+      "kind": "parameter",
+      "type": {
+        "kind": "tensor",
+        "shape": [
+          2,
+          4
+        ],
+        "dtype": "float64",
+        "device": "cpu",
+        "layout": "strided",
+        "axes": [
+          null,
+          null
+        ]
+      },
+      "data": [
+        [
+          -0.4055368900299072,
+          -0.13639968633651733,
+          0.46243780851364136,
+          0.1151055097579956
+        ],
+        [
+          -0.09271472692489624,
+          0.46556973457336426,
+          0.05062687397003174,
+          -0.39963454008102417
+        ]
+      ]
+    },
+    {
+      "id": "state:2.bias",
+      "kind": "parameter",
+      "type": {
+        "kind": "tensor",
+        "shape": [
+          2
+        ],
+        "dtype": "float64",
+        "device": "cpu",
+        "layout": "strided",
+        "axes": [
+          null
+        ]
+      },
+      "data": [
+        -0.06369483470916748,
+        -0.41837769746780396
+      ]
+    }
+  ],
+  "ops": [
+    {
+      "id": "_0",
+      "op": "linear",
+      "args": [
+        {
+          "ref": "input_1"
+        },
+        {
+          "ref": "state:0.weight"
+        },
+        {
+          "ref": "state:0.bias"
+        }
+      ],
+      "attrs": {},
+      "regions": {}
+    },
+    {
+      "id": "_1",
+      "op": "relu",
+      "args": [
+        {
+          "ref": "_0"
+        }
+      ],
+      "attrs": {},
+      "regions": {}
+    },
+    {
+      "id": "_2",
+      "op": "linear",
+      "args": [
+        {
+          "ref": "_1"
+        },
+        {
+          "ref": "state:2.weight"
+        },
+        {
+          "ref": "state:2.bias"
+        }
+      ],
+      "attrs": {},
+      "regions": {}
+    }
+  ],
+  "result": {
+    "ref": "_2"
+  },
+  "capture": {
+    "method": "fx",
+    "training": true
+  }
+}

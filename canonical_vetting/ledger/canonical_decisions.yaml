@@ -1,0 +1,33 @@
+ledger/DEC-compiler:
+  digest: sha256:8cf90e78c3fbad13
+  verdict: pending
+ledger/DEC-contract-names:
+  digest: sha256:c25106bb7e7d94fd
+  verdict: pending
+ledger/DEC-control:
+  digest: sha256:61736c9cd3e5c4b0
+  verdict: pending
+ledger/DEC-graph:
+  digest: sha256:0c8f074cc28abc1a
+  verdict: pending
+ledger/DEC-import:
+  digest: sha256:aec33b134d5edc63
+  verdict: pending
+ledger/DEC-law-owned-conformance:
+  digest: sha256:8a4dfcaea528117b
+  verdict: pending
+ledger/DEC-library:
+  digest: sha256:b29f9a4104a48379
+  verdict: pending
+ledger/DEC-project-name:
+  digest: sha256:8b293729ce262dca
+  verdict: pending
+ledger/DEC-rewrites:
+  digest: sha256:86bf50e347fac127
+  verdict: pending
+ledger/DEC-shapes:
+  digest: sha256:cd8b4ef6a157e177
+  verdict: pending
+ledger/DEC-state:
+  digest: sha256:4b4a7224d7fb948c
+  verdict: pending

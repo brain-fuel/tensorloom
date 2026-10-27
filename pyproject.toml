@@ -1,0 +1,14 @@
+[project]
+name = "tensorloom"
+version = "0.2.0"
+requires-python = ">=3.13,<3.14"
+dependencies = ["torch==2.14.1"]
+[dependency-groups]
+dev = [
+    "pytest==8.4.2",
+    "numpy==2.5.4",
+    "hypothesis>=6",
+]
+[tool.pytest.ini_options]
+pythonpath = ["python/lawspec_generated", "python"]
+testpaths = ["python/lawspec_tests"]

@@ -1,0 +1,67 @@
+{
+  "pytorch-index": {
+    "kind": "article",
+    "title": "PyTorch 2.14 documentation index",
+    "locator": "https://docs.pytorch.org/docs/2.14/index.html"
+  },
+  "pytorch-accuracy": {
+    "kind": "article",
+    "title": "PyTorch numerical accuracy",
+    "locator": "https://docs.pytorch.org/docs/2.14/notes/numerical_accuracy.html"
+  },
+  "pytorch-export": {
+    "kind": "article",
+    "title": "PyTorch export IR specification",
+    "locator": "https://docs.pytorch.org/docs/2.14/user_guide/torch_compiler/export/ir_spec.html"
+  },
+  "pytorch-broadcasting": {
+    "kind": "article",
+    "title": "PyTorch broadcasting semantics",
+    "locator": "https://docs.pytorch.org/docs/2.14/notes/broadcasting.html"
+  },
+  "pytorch-modules": {
+    "kind": "article",
+    "title": "PyTorch module state",
+    "locator": "https://docs.pytorch.org/docs/2.14/notes/modules.html"
+  },
+  "pytorch-random": {
+    "kind": "article",
+    "title": "PyTorch reproducibility",
+    "locator": "https://docs.pytorch.org/docs/2.14/notes/randomness.html"
+  },
+  "pytorch-batchnorm": {
+    "kind": "article",
+    "title": "PyTorch BatchNorm2d",
+    "locator": "https://docs.pytorch.org/docs/2.14/generated/torch.nn.BatchNorm2d.html"
+  },
+  "user-plan": {
+    "kind": "discussion",
+    "title": "Supplied implementation plan and discovery",
+    "locator": "docs/explanation/discovery.md"
+  },
+  "lawspec-native-bindings": {
+    "kind": "article",
+    "title": "LawSpec native binding contract",
+    "locator": "../lawspec/docs/reference/native-bindings.md"
+  },
+  "lawspec-harness": {
+    "kind": "article",
+    "title": "LawSpec finite checking, strategies and harness ownership",
+    "locator": "../lawspec/docs/reference/language/harness.md"
+  },
+  "lawspec-iteration": {
+    "kind": "article",
+    "title": "LawSpec canonical sequence iteration lowering",
+    "locator": "../lawspec/src/LawSpec/Imports.hs"
+  },
+  "ironframe-planes": {
+    "kind": "article",
+    "title": "Ironframe environment and topology ownership",
+    "locator": "../ironframe/README.md"
+  },
+  "lawtwin-planes": {
+    "kind": "article",
+    "title": "LawTwin protocol-fixture and reference-model ownership",
+    "locator": "../lawtwin/README.md"
+  }
+}

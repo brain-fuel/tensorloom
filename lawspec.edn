@@ -1,0 +1,26 @@
+{:manifest-version 1
+ :component {:name "tensorloom" :version "0.2.0"}
+ :language-profile "1.0-rc.2"
+ :verification {:layers [:examples :property :exhaustive]}
+ :generation {:cases 50 :max-attempts 10000 :max-shrinks 1000 :exhaustive-limit 4096}
+ :sources ["laws/shapes.lawspec" "laws/graphs.lawspec"]
+ :inputs ["lib" "python/tensorloom" "priv/operations.json"]
+ :targets [{:language :elixir :root "."
+   :native-bindings {
+    :types [{:type "tensorloom.shapes::type::Matrix"
+      :native ["Tensorloom" "MatrixShape"]
+      :constructors [{:constructor "Matrix" :native ["Tensorloom" "MatrixShape"] :style "record"
+        :fields [{:field "rows" :native "rows"} {:field "cols" :native "cols"}]}]}]
+    :functions [
+      {:declaration "tensorloom.shapes::broadcastExtent" :native ["Tensorloom" "LawAdapters" "broadcast_extent"]}
+      {:declaration "tensorloom.shapes::transposeShape" :native ["Tensorloom" "LawAdapters" "transpose_shape"]}
+      {:declaration "tensorloom.shapes::matmulShape" :native ["Tensorloom" "LawAdapters" "matmul_shape"]}
+      {:declaration "tensorloom.shapes::reshapeShape" :native ["Tensorloom" "LawAdapters" "reshape_shape"]}
+      {:declaration "tensorloom.shapes::concatenateShape" :native ["Tensorloom" "LawAdapters" "concatenate_shape"]}
+      {:declaration "tensorloom.shapes::reduceShape" :native ["Tensorloom" "LawAdapters" "reduce_shape"]}
+      {:declaration "tensorloom.shapes::sliceShape" :native ["Tensorloom" "LawAdapters" "slice_shape"]}
+      {:declaration "tensorloom.graphs::codec" :native ["Tensorloom" "LawAdapters" "codec"]}
+      {:declaration "tensorloom.graphs::rewrites" :native ["Tensorloom" "LawAdapters" "rewrites"]}
+      {:declaration "tensorloom.graphs::permutation" :native ["Tensorloom" "LawAdapters" "permutation"]}
+      {:declaration "tensorloom.graphs::join" :native ["Tensorloom" "LawAdapters" "join"]}
+      {:declaration "tensorloom.graphs::resolveIndependent" :native ["Tensorloom" "LawAdapters" "resolve_independent"]}]}}]}

@@ -1,0 +1,33 @@
+{
+  "version": "0.1.0",
+  "ignore": [
+    ".ricestax",
+    "node_modules",
+    "target",
+    "build",
+    "dist",
+    ".venv",
+    "__pycache__",
+    "deps",
+    "_build",
+    ".lawspec",
+    ".pytest_cache",
+    "artifacts",
+    "README.md"
+  ],
+  "languages": {
+    "folio": {
+      "extensions": [
+        ".md"
+      ],
+      "lexer": ".ricestax/grammars/folio/FolioLexer.g4",
+      "parser": ".ricestax/grammars/folio/FolioParser.g4",
+      "start": "document",
+      "embeds": {}
+    }
+  },
+  "registry": "canonical_refs.yaml",
+  "decisions": "canonical_decisions.yaml",
+  "exemptions": "canonical_exemptions.yaml",
+  "vetting": "canonical_vetting"
+}

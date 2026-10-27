@@ -1,0 +1,162 @@
+# Tensorloom — ML Architecture Notation
+
+Version 0.5 — executable dense CPU profile
+
+The normative decisions are in canonical_decisions.yaml. Source comparisons and
+capability boundaries are in docs/reference/pytorch-comparison.md. Executable contracts
+are in laws/ and python/laws/; tests provide sampled or explicitly finite evidence, not proofs.
+
+## Values and types (ref:DEC-graph, ref:DEC-shapes)
+
+A node takes ordered typed values and returns ONE typed value. That value may
+be a tensor, scalar, tuple, or string-keyed dictionary, recursively. A region
+also has one result value. For example an LSTM cell returns (hidden, cell),
+and max pooling may return (values, flattened_indices). Selecting a tuple
+component does not require multiple output ports.
+
+A tensor type has shape, dtype, device, layout, and an optional name for each
+axis. Extents are nonnegative integers or symbolic identifiers; rank is fixed.
+The initial compiler accepts dense strided CPU Float32, Float64, Int64, Bool.
+Other devices, layouts, and dtypes are explicit unsupported-type diagnostics.
+Scalar types are bool, int64, float32, float64. Shape calculations use exact
+integers. Tensor arithmetic retains PyTorch's floating-point semantics.
+
+Broadcasting aligns axes positionally from the RIGHT. Equal extents match;
+one broadcasts to the other extent. Thus 0 with 1 gives 0, while 0 with 2 is
+invalid. Names select axes and improve diagnostics; names never realign
+broadcast operands. Vector/vector matmul gives rank zero, vectors are promoted
+and then demoted, and matrix batch dimensions broadcast positionally.
+
+A shape relation that cannot be decided statically is retained in infer's
+constraints. Eager modules check input ranks, extents, shared symbols, dtypes,
+devices, layouts, and declared symbol bounds. PyTorch operations enforce
+remaining compatibility constraints. Export records declared dynamic dimensions
+and rejects constraints it cannot capture; unknown constraints are not proofs.
+
+## Ordered graph core
+
+Version 1 JSON is the portable representation. A graph has:
+
+  version: 1
+  inputs: [{id, type}, ...]
+  state: [{id, kind, type, data OR alias}, ...]
+  ops: [{id, op, args, attrs, regions}, ...]
+  result: value_expression
+
+A reference is {"ref": "value_id"}. A literal scalar is {"lit": value}.
+Structured expressions are {"tuple": [value_expression, ...]} and
+{"dict": {key: value_expression, ...}}. Order of arguments is significant.
+Metadata (including capture provenance and source locations) survives JSON.
+JSON null is a missing axis name, never the text "nil".
+
+Operation IDs are unique within a region. Every reference must refer to an
+input, state binding, or EARLIER operation in that region. Forward references,
+dangling references, and unstructured cycles are invalid. An unknown operation
+fails with unsupported-operation and its operation ID. The shared registry
+priv/operations.json owns signatures, effects, shape policies, expansion names,
+lowering support, and capture mappings.
+
+Regions declare their own typed inputs and receive every dependency explicitly
+through the enclosing operation's args. A region cannot reach into its lexical
+parent. Region-local IDs are scoped. Capture excludes module hooks and arbitrary
+Python behavior; unsupported features must fail without another capture method.
+
+## State and effects (ref:DEC-state)
+
+Parameters are registered learnable tensors, constants are immutable tensors,
+and buffers are mutable persistent state. A state alias references a canonical
+state binding of the same kind and type. Aliases are actual object identity,
+so repeated uses accumulate gradients into ONE parameter. A rewrite cannot
+create a second parameter merely because a node was copied or renamed.
+
+State entries contain concrete tensor data and shapes. Captured frozen parameter
+flags and buffer persistence are retained. Stateful operations take explicit
+buffer references; writes to constants or parameters are rejected. Ordered
+operations and nested regions determine effect order. Random effects and state
+effects are distinct registry entries; they are NOT inferred from routing.
+
+Router-free topology is an ordered DAG, but it may consume randomness or mutate
+buffers. It need not be deterministic. Dropout has explicit randomness; a supplied
+boolean mask makes its numerical behavior deterministic. Training mode is an
+explicit primitive reading Module.training; train/eval can choose region paths.
+
+## Structured control flow (ref:DEC-control)
+
+branch(predicate, operands...) has true and false regions. Both regions receive
+the same operands and must return compatible types. The predicate is a boolean
+scalar, possibly a rank-zero boolean tensor. Exactly ONE region executes in
+eager execution. Export lowers compatible tensor conditionals with torch.cond.
+
+loop(initial_state) has a body from state to compatible state. State may be
+structured. A fixed nonnegative count means exactly that many applications;
+zero applications are the identity. Fixed-count loops can be unrolled. A
+convergence loop additionally has a condition from state to boolean and an
+explicit nonnegative budget. The condition is tested before the first pass and
+after the last allowed pass. If it still holds when the budget is exhausted,
+execution fails with loop-budget. Convergence loops are eager only.
+
+Routing assignments are partial maps from router identity to boolean. Compatible
+assignments agree wherever both are defined. Independent compatible resolutions
+commute; reapplying a decision is idempotent and a conflicting assignment fails.
+Partial evaluation records decision history. Conditional reachability and
+repeated loop decisions prevent a general hypercube claim. Only n explicitly
+independent, single-use, reachable binary decisions have 2^n assignments; the
+number of distinct observable computations may still be smaller. Router IDs
+used for resolution must be unambiguous across nested regions.
+
+## Topology is wiring, not storage allocation
+
+pipe(A, B): connect A's value to a declared argument of B.
+fork(A, n): make the SAME value available to n consumers. No physical copy is
+required and no mutation right is implied. Explicit clone is a separate node.
+join(A, B, ... -> Z): supply ordered arguments to Z. Z chooses how to combine.
+parallel(A, B, ...): assert independent regions. Reordering is valid only for
+pure regions with no dependency or effect interaction. Execution can be serial.
+swap(perm): reorder tracks by a bijective permutation. Identity and composition
+with the inverse preserve values and positions.
+
+## Rewrites (ref:DEC-rewrites)
+
+collapse(graph, selection) wraps selected ordered operations in a call region.
+All incoming dependencies become region inputs. ALL values consumed outside
+become tuple components, extracted at their old value IDs. Selection must admit
+an insertion point with all inputs available and all outgoing uses afterward;
+otherwise collapse fails. Crossing another effect when moving selected effects
+is rejected. The enclosing graph must remain acyclic. Implementation conservatively
+rejects selections whose outside consumers precede the final selected operation.
+
+expand recursively inlines call regions and registered library recipes, alpha
+renaming internal IDs to avoid collisions. State references remain shared.
+Canonical expansion is stable. Expansion does not reassociate arbitrary floating
+point expressions. Numerical agreement uses dtype-specific tolerances, handles
+NaN/infinity explicitly, and preserves effects and result interfaces.
+
+Linear, stable softmax, attention, convolution, pooling, recurrent cells,
+LayerNorm, BatchNorm, embedding and dropout have inspectable expansions.
+Window extraction, indexed lookup, indexed reduction, gather, random generation,
+casts, buffer writes and arithmetic are backend primitives. Expanded and native
+kernel lowerings are independently compared with ordinary PyTorch models.
+Native fused operators can differ in floating rounding, not in intended masks,
+shared state, branch exclusivity, or statistical definitions.
+
+## Interfaces and compilation (ref:DEC-compiler, ref:DEC-import)
+
+validate(graph) -> {:ok, graph} | {:error, operation_diagnostics}
+infer(graph, bindings) -> {:ok, inferred_types_and_constraints} | {:error, ...}
+expand(graph) / collapse(graph, selection) -> {:ok, graph} | {:error, ...}
+resolve(graph, compatible_partial_decisions) -> {:ok, graph} | {:error, ...}
+encode(graph) / decode(json) -> {:ok, representation} | {:error, ...}
+compile(graph, options) -> {:ok, generated_python_or_export_artifact} | {:error, ...}
+
+The Elixir builder constructs this same representation. Python capture has two
+explicit methods: FX for static Python control flow and export for constrained
+ATen graphs. There is no silent fallback. Both preserve public output structure,
+registered state and aliases for supported graphs. Export capture preserves call
+specifications and finite shape bounds. Unsupported mutation or operators are
+reported instead of being guessed or dropped.
+
+Generated modules register parameters and buffers, use PyTorch autograd, preserve
+structured outputs, and support train/eval. The initial export profile is
+inference, declared dynamic dimensions, fixed-count recurrence, and compatible
+structured tensor conditionals. Export restrictions and tested model families
+are documented separately from eager support.

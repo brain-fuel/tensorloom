@@ -1,0 +1,39 @@
+-- ref:DEC-project-name
+-- ref:DEC-graph ref:DEC-rewrites ref:DEC-control ref:DEC-compiler
+unit tensorloom.graphs
+refinement Width is (n of type Whole where n <= 8) end refinement
+codec of type Width -> Bool
+rewrites of type Width -> Bool
+permutation of type List Int32 -> List Int32
+join of type Int32 -> Int32 -> List Int32
+resolveIndependent of type Bool -> Bool -> Bool
+
+function orderedModel (a of type Int32) (b of type Int32) -> List Int32 is [a,b]
+end function
+
+law "|versioned JSON preserves graph identity and structure| is
+  definition: for all (n of type Width) => codec n must be true end for all
+  end definition
+  expect codec n = true in table (n): row 0 row 1 row 8 end table
+end law
+law "|collapse preserves interfaces and expansion is stable| is
+  definition: for all (n of type Width) => rewrites n must be true end for all
+  end definition
+end law
+law "|permutation inversion preserves ordered values| is
+  definition: for all (xs of type List Int32) => permutation xs must be xs
+    end for all end definition
+  example "|duplicates and order|: xs=[3,1,3] expect permutation xs = [3,1,3]
+  end example
+end law
+law "|join preserves argument positions| is
+  definition: for all (a of type Int32) (b of type Int32) => join a b must be
+      orderedModel a b end for all end definition
+  expect join a b = out in table (a,b,out): row 2,7,[2,7] row 7,2,[7,2]
+  end table
+end law
+law "|independent compatible resolutions commute| is
+  definition: for all (a of type Bool) (b of type Bool) => resolveIndependent a
+      b must be true end for all end definition
+end law
+end unit

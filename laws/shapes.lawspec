@@ -1,0 +1,97 @@
+-- ref:DEC-contract-names
+-- ref:DEC-project-name
+-- ref:DEC-shapes
+unit tensorloom.shapes
+
+refinement Extent is (n of type Whole where n <= 4) end refinement
+
+type Matrix is a record
+{
+  rows of type Extent
+  cols of type Extent
+}
+end type
+
+broadcastExtent of type Extent -> Extent -> Integer
+transposeShape of type Matrix -> List Whole
+matmulShape of type Matrix -> Extent -> List Whole
+reshapeShape of type Matrix -> List Whole
+concatenateShape of type Matrix -> Extent -> List Whole
+reduceShape of type Matrix -> List Whole
+sliceShape of type Matrix -> Extent -> List Whole
+
+function broadcastModel (a of type Extent) (b of type Extent) -> Integer is
+  if a = b then a else if a = 1 then b else if b = 1 then a else -1 end if
+    end if end if
+end function
+function transposeModel (s of type Matrix) -> List Whole is
+  first matching case of s:
+    when Matrix record{rows = r, cols = c} then [c,r]
+  end case
+end function
+function productModel (s of type Matrix) -> List Whole is
+  first matching case of s:
+    when Matrix record{rows = r, cols = c} then [r*c]
+  end case
+end function
+function matmulModel (s of type Matrix) (n of type Extent) -> List Whole is
+  first matching case of s:
+    when Matrix record{rows = r, cols = c} then [r,n]
+  end case
+end function
+function catModel (s of type Matrix) (n of type Extent) -> List Whole is
+  first matching case of s:
+    when Matrix record{rows = r, cols = c} then [r,c+n]
+  end case
+end function
+function reduceModel (s of type Matrix) -> List Whole is
+  first matching case of s:
+    when Matrix record{rows = r, cols = c} then [r]
+  end case
+end function
+function sliceModel (s of type Matrix) (n of type Extent) -> List Whole is
+  first matching case of s:
+    when Matrix record{rows = r, cols = c} then [r, if n < c then n else c
+      end if]
+  end case
+end function
+
+law "|positional broadcasting preserves zero extents| is
+  definition: for all (a of type Extent) (b of type Extent) =>
+      broadcastExtent a b must be broadcastModel a b
+    end for all end definition
+  expect broadcastExtent a b = out
+  in table (a,b,out):
+    row 0,1,0
+    row 0,0,0
+    row 0,2,-1
+    row 3,1,3
+  end table
+end law
+law "|transpose swaps exactly two dimensions| is
+  definition: for all (s of type Matrix) => transposeShape s must be
+      transposeModel s end for all end definition
+  example "|rectangular|: s = Matrix record{rows=2,cols=3} expect transposeShape
+    s = [3,2] end example
+end law
+law "|matmul derives outer dimensions| is
+  definition: for all (s of type Matrix) (n of type Extent) => matmulShape s n
+      must be matmulModel s n end for all end definition
+end law
+law "|reshape preserves exact element counts| is
+  definition: for all (s of type Matrix) => reshapeShape s must be productModel
+      s end for all end definition
+end law
+law "|concatenation adds only its selected dimension| is
+  definition: for all (s of type Matrix) (n of type Extent) => concatenateShape
+      s n must be catModel s n end for all end definition
+end law
+law "|reduction removes exactly its selected dimension| is
+  definition: for all (s of type Matrix) => reduceShape s must be reduceModel s
+    end for all end definition
+end law
+law "|slicing clips at the axis boundary| is
+  definition: for all (s of type Matrix) (n of type Extent) => sliceShape s n
+      must be sliceModel s n end for all end definition
+end law
+end unit

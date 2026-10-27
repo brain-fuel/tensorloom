@@ -1,0 +1,1331 @@
+{
+  "identity": {
+    "arity": [
+      1,
+      1
+    ],
+    "shape": "unary",
+    "effects": [],
+    "lowerings": [
+      "native",
+      "expanded"
+    ],
+    "expansion": null,
+    "imports": [
+      "identity",
+      "aten.detach.default"
+    ]
+  },
+  "relu": {
+    "arity": [
+      1,
+      1
+    ],
+    "shape": "unary",
+    "effects": [],
+    "lowerings": [
+      "native",
+      "expanded"
+    ],
+    "expansion": null,
+    "imports": [
+      "relu",
+      "aten.relu.default"
+    ]
+  },
+  "sigmoid": {
+    "arity": [
+      1,
+      1
+    ],
+    "shape": "unary",
+    "effects": [],
+    "lowerings": [
+      "native",
+      "expanded"
+    ],
+    "expansion": null,
+    "imports": [
+      "sigmoid",
+      "aten.sigmoid.default"
+    ]
+  },
+  "tanh": {
+    "arity": [
+      1,
+      1
+    ],
+    "shape": "unary",
+    "effects": [],
+    "lowerings": [
+      "native",
+      "expanded"
+    ],
+    "expansion": null,
+    "imports": [
+      "tanh",
+      "aten.tanh.default"
+    ]
+  },
+  "exp": {
+    "arity": [
+      1,
+      1
+    ],
+    "shape": "unary",
+    "effects": [],
+    "lowerings": [
+      "native",
+      "expanded"
+    ],
+    "expansion": null,
+    "imports": [
+      "exp",
+      "aten.exp.default"
+    ]
+  },
+  "log": {
+    "arity": [
+      1,
+      1
+    ],
+    "shape": "unary",
+    "effects": [],
+    "lowerings": [
+      "native",
+      "expanded"
+    ],
+    "expansion": null,
+    "imports": [
+      "log"
+    ]
+  },
+  "sqrt": {
+    "arity": [
+      1,
+      1
+    ],
+    "shape": "unary",
+    "effects": [],
+    "lowerings": [
+      "native",
+      "expanded"
+    ],
+    "expansion": null,
+    "imports": [
+      "sqrt"
+    ]
+  },
+  "abs": {
+    "arity": [
+      1,
+      1
+    ],
+    "shape": "unary",
+    "effects": [],
+    "lowerings": [
+      "native",
+      "expanded"
+    ],
+    "expansion": null,
+    "imports": [
+      "abs"
+    ]
+  },
+  "neg": {
+    "arity": [
+      1,
+      1
+    ],
+    "shape": "unary",
+    "effects": [],
+    "lowerings": [
+      "native",
+      "expanded"
+    ],
+    "expansion": null,
+    "imports": [
+      "neg"
+    ]
+  },
+  "clone": {
+    "arity": [
+      1,
+      1
+    ],
+    "shape": "unary",
+    "effects": [],
+    "lowerings": [
+      "native",
+      "expanded"
+    ],
+    "expansion": null,
+    "imports": [
+      "clone",
+      "aten.clone.default"
+    ]
+  },
+  "contiguous": {
+    "arity": [
+      1,
+      1
+    ],
+    "shape": "unary",
+    "effects": [],
+    "lowerings": [
+      "native",
+      "expanded"
+    ],
+    "expansion": null,
+    "imports": [
+      "contiguous"
+    ]
+  },
+  "add": {
+    "arity": [
+      2,
+      2
+    ],
+    "shape": "broadcast",
+    "effects": [],
+    "lowerings": [
+      "native",
+      "expanded"
+    ],
+    "expansion": null,
+    "imports": [
+      "add",
+      "__add__",
+      "aten.add.Tensor"
+    ]
+  },
+  "sub": {
+    "arity": [
+      2,
+      2
+    ],
+    "shape": "broadcast",
+    "effects": [],
+    "lowerings": [
+      "native",
+      "expanded"
+    ],
+    "expansion": null,
+    "imports": [
+      "sub",
+      "__sub__",
+      "aten.sub.Tensor"
+    ]
+  },
+  "mul": {
+    "arity": [
+      2,
+      2
+    ],
+    "shape": "broadcast",
+    "effects": [],
+    "lowerings": [
+      "native",
+      "expanded"
+    ],
+    "expansion": null,
+    "imports": [
+      "mul",
+      "__mul__",
+      "aten.mul.Tensor"
+    ]
+  },
+  "div": {
+    "arity": [
+      2,
+      2
+    ],
+    "shape": "broadcast",
+    "effects": [],
+    "lowerings": [
+      "native",
+      "expanded"
+    ],
+    "expansion": null,
+    "imports": [
+      "div",
+      "truediv",
+      "aten.div.Tensor"
+    ]
+  },
+  "pow": {
+    "arity": [
+      2,
+      2
+    ],
+    "shape": "broadcast",
+    "effects": [],
+    "lowerings": [
+      "native",
+      "expanded"
+    ],
+    "expansion": null,
+    "imports": [
+      "pow"
+    ]
+  },
+  "maximum": {
+    "arity": [
+      2,
+      2
+    ],
+    "shape": "broadcast",
+    "effects": [],
+    "lowerings": [
+      "native",
+      "expanded"
+    ],
+    "expansion": null,
+    "imports": [
+      "maximum"
+    ]
+  },
+  "minimum": {
+    "arity": [
+      2,
+      2
+    ],
+    "shape": "broadcast",
+    "effects": [],
+    "lowerings": [
+      "native",
+      "expanded"
+    ],
+    "expansion": null,
+    "imports": [
+      "minimum"
+    ]
+  },
+  "eq": {
+    "arity": [
+      2,
+      2
+    ],
+    "shape": "broadcast",
+    "effects": [],
+    "lowerings": [
+      "native",
+      "expanded"
+    ],
+    "expansion": null,
+    "imports": [
+      "eq"
+    ]
+  },
+  "lt": {
+    "arity": [
+      2,
+      2
+    ],
+    "shape": "broadcast",
+    "effects": [],
+    "lowerings": [
+      "native",
+      "expanded"
+    ],
+    "expansion": null,
+    "imports": [
+      "lt"
+    ]
+  },
+  "le": {
+    "arity": [
+      2,
+      2
+    ],
+    "shape": "broadcast",
+    "effects": [],
+    "lowerings": [
+      "native",
+      "expanded"
+    ],
+    "expansion": null,
+    "imports": [
+      "le"
+    ]
+  },
+  "gt": {
+    "arity": [
+      2,
+      2
+    ],
+    "shape": "broadcast",
+    "effects": [],
+    "lowerings": [
+      "native",
+      "expanded"
+    ],
+    "expansion": null,
+    "imports": [
+      "gt"
+    ]
+  },
+  "ge": {
+    "arity": [
+      2,
+      2
+    ],
+    "shape": "broadcast",
+    "effects": [],
+    "lowerings": [
+      "native",
+      "expanded"
+    ],
+    "expansion": null,
+    "imports": [
+      "ge"
+    ]
+  },
+  "logical_and": {
+    "arity": [
+      2,
+      2
+    ],
+    "shape": "broadcast",
+    "effects": [],
+    "lowerings": [
+      "native",
+      "expanded"
+    ],
+    "expansion": null,
+    "imports": [
+      "logical_and"
+    ]
+  },
+  "matmul": {
+    "arity": [
+      2,
+      2
+    ],
+    "shape": "matmul",
+    "effects": [],
+    "lowerings": [
+      "native",
+      "expanded"
+    ],
+    "expansion": null,
+    "imports": [
+      "torch.matmul",
+      "operator.matmul",
+      "aten.matmul.default",
+      "aten.mm.default",
+      "aten.bmm.default",
+      "__matmul__"
+    ]
+  },
+  "reshape": {
+    "arity": [
+      1,
+      1
+    ],
+    "shape": "reshape",
+    "effects": [],
+    "lowerings": [
+      "native",
+      "expanded"
+    ],
+    "expansion": null,
+    "imports": [
+      "reshape",
+      "view",
+      "aten.view.default",
+      "aten.reshape.default"
+    ]
+  },
+  "transpose": {
+    "arity": [
+      1,
+      1
+    ],
+    "shape": "transpose",
+    "effects": [],
+    "lowerings": [
+      "native",
+      "expanded"
+    ],
+    "expansion": null,
+    "imports": [
+      "transpose",
+      "aten.transpose.int",
+      "t"
+    ]
+  },
+  "permute": {
+    "arity": [
+      1,
+      1
+    ],
+    "shape": "permute",
+    "effects": [],
+    "lowerings": [
+      "native",
+      "expanded"
+    ],
+    "expansion": null,
+    "imports": [
+      "permute",
+      "aten.permute.default"
+    ]
+  },
+  "slice": {
+    "arity": [
+      1,
+      1
+    ],
+    "shape": "index",
+    "effects": [],
+    "lowerings": [
+      "native",
+      "expanded"
+    ],
+    "expansion": null,
+    "imports": [
+      "slice",
+      "aten.slice.Tensor"
+    ]
+  },
+  "select": {
+    "arity": [
+      1,
+      1
+    ],
+    "shape": "index",
+    "effects": [],
+    "lowerings": [
+      "native",
+      "expanded"
+    ],
+    "expansion": null,
+    "imports": [
+      "select",
+      "aten.select.int"
+    ]
+  },
+  "getitem": {
+    "arity": [
+      1,
+      1
+    ],
+    "shape": "index",
+    "effects": [],
+    "lowerings": [
+      "native",
+      "expanded"
+    ],
+    "expansion": null,
+    "imports": [
+      "getitem"
+    ]
+  },
+  "cat": {
+    "arity": [
+      1,
+      999
+    ],
+    "shape": "cat",
+    "effects": [],
+    "lowerings": [
+      "native",
+      "expanded"
+    ],
+    "expansion": null,
+    "imports": [
+      "cat",
+      "aten.cat.default"
+    ]
+  },
+  "stack": {
+    "arity": [
+      1,
+      999
+    ],
+    "shape": "cat",
+    "effects": [],
+    "lowerings": [
+      "native",
+      "expanded"
+    ],
+    "expansion": null,
+    "imports": [
+      "stack"
+    ]
+  },
+  "sum": {
+    "arity": [
+      1,
+      1
+    ],
+    "shape": "reduce",
+    "effects": [],
+    "lowerings": [
+      "native",
+      "expanded"
+    ],
+    "expansion": null,
+    "imports": [
+      "sum",
+      "aten.sum.dim_IntList"
+    ]
+  },
+  "mean": {
+    "arity": [
+      1,
+      1
+    ],
+    "shape": "reduce",
+    "effects": [],
+    "lowerings": [
+      "native",
+      "expanded"
+    ],
+    "expansion": null,
+    "imports": [
+      "mean",
+      "aten.mean.dim"
+    ]
+  },
+  "amax": {
+    "arity": [
+      1,
+      1
+    ],
+    "shape": "reduce",
+    "effects": [],
+    "lowerings": [
+      "native",
+      "expanded"
+    ],
+    "expansion": null,
+    "imports": [
+      "amax"
+    ]
+  },
+  "amin": {
+    "arity": [
+      1,
+      1
+    ],
+    "shape": "reduce",
+    "effects": [],
+    "lowerings": [
+      "native",
+      "expanded"
+    ],
+    "expansion": null,
+    "imports": [
+      "amin"
+    ]
+  },
+  "prod": {
+    "arity": [
+      1,
+      1
+    ],
+    "shape": "reduce",
+    "effects": [],
+    "lowerings": [
+      "native",
+      "expanded"
+    ],
+    "expansion": null,
+    "imports": [
+      "prod"
+    ]
+  },
+  "var": {
+    "arity": [
+      1,
+      1
+    ],
+    "shape": "reduce",
+    "effects": [],
+    "lowerings": [
+      "native",
+      "expanded"
+    ],
+    "expansion": null,
+    "imports": [
+      "var"
+    ]
+  },
+  "softmax": {
+    "arity": [
+      1,
+      1
+    ],
+    "shape": "unary",
+    "effects": [],
+    "lowerings": [
+      "native",
+      "expanded"
+    ],
+    "expansion": "stable_softmax",
+    "imports": [
+      "Softmax",
+      "torch.softmax",
+      "torch.nn.functional.softmax",
+      "aten.softmax.int",
+      "aten._softmax.default"
+    ]
+  },
+  "linear": {
+    "arity": [
+      2,
+      3
+    ],
+    "shape": "linear",
+    "effects": [],
+    "lowerings": [
+      "native",
+      "expanded"
+    ],
+    "expansion": "linear",
+    "imports": [
+      "Linear",
+      "torch.nn.functional.linear",
+      "aten.linear.default"
+    ]
+  },
+  "attention": {
+    "arity": [
+      3,
+      4
+    ],
+    "shape": "attention",
+    "effects": [
+      "random"
+    ],
+    "lowerings": [
+      "native",
+      "expanded"
+    ],
+    "expansion": "attention",
+    "imports": [
+      "torch.nn.functional.scaled_dot_product_attention",
+      "aten.scaled_dot_product_attention.default",
+      "scaled_dot_product_attention"
+    ]
+  },
+  "embedding": {
+    "arity": [
+      2,
+      2
+    ],
+    "shape": "embedding",
+    "effects": [],
+    "lowerings": [
+      "native",
+      "expanded"
+    ],
+    "expansion": "indexed_lookup",
+    "imports": [
+      "Embedding",
+      "torch.nn.functional.embedding",
+      "aten.embedding.default",
+      "embedding"
+    ]
+  },
+  "conv2d": {
+    "arity": [
+      2,
+      3
+    ],
+    "shape": "conv2d",
+    "effects": [],
+    "lowerings": [
+      "native",
+      "expanded"
+    ],
+    "expansion": "unfold_matmul",
+    "imports": [
+      "Conv2d",
+      "torch.nn.functional.conv2d",
+      "aten.conv2d.default"
+    ]
+  },
+  "max_pool2d": {
+    "arity": [
+      1,
+      1
+    ],
+    "shape": "pool",
+    "effects": [],
+    "lowerings": [
+      "native",
+      "expanded"
+    ],
+    "expansion": "window_reduce",
+    "imports": [
+      "max_pool2d",
+      "aten.max_pool2d.default",
+      "MaxPool2d",
+      "aten.max_pool2d_with_indices.default",
+      "max_pool2d_with_indices"
+    ]
+  },
+  "avg_pool2d": {
+    "arity": [
+      1,
+      1
+    ],
+    "shape": "pool",
+    "effects": [],
+    "lowerings": [
+      "native",
+      "expanded"
+    ],
+    "expansion": "window_reduce",
+    "imports": [
+      "avg_pool2d",
+      "aten.avg_pool2d.default",
+      "AvgPool2d"
+    ]
+  },
+  "rnn_cell": {
+    "arity": [
+      4,
+      6
+    ],
+    "shape": "recurrent",
+    "effects": [],
+    "lowerings": [
+      "native",
+      "expanded"
+    ],
+    "expansion": "gates",
+    "imports": [
+      "rnn_cell",
+      "RNNCell",
+      "RNN"
+    ]
+  },
+  "gru_cell": {
+    "arity": [
+      4,
+      6
+    ],
+    "shape": "recurrent",
+    "effects": [],
+    "lowerings": [
+      "native",
+      "expanded"
+    ],
+    "expansion": "gates",
+    "imports": [
+      "gru_cell",
+      "GRUCell",
+      "GRU"
+    ]
+  },
+  "lstm_cell": {
+    "arity": [
+      5,
+      7
+    ],
+    "shape": "recurrent",
+    "effects": [],
+    "lowerings": [
+      "native",
+      "expanded"
+    ],
+    "expansion": "gates",
+    "imports": [
+      "LSTMCell",
+      "LSTM"
+    ]
+  },
+  "layer_norm": {
+    "arity": [
+      1,
+      3
+    ],
+    "shape": "unary",
+    "effects": [],
+    "lowerings": [
+      "native",
+      "expanded"
+    ],
+    "expansion": "moments",
+    "imports": [
+      "LayerNorm",
+      "torch.nn.functional.layer_norm",
+      "aten.layer_norm.default"
+    ]
+  },
+  "batch_norm": {
+    "arity": [
+      3,
+      6
+    ],
+    "shape": "unary",
+    "effects": [
+      "state"
+    ],
+    "lowerings": [
+      "native",
+      "expanded"
+    ],
+    "expansion": "running_moments",
+    "imports": [
+      "BatchNorm1d",
+      "BatchNorm2d",
+      "BatchNorm3d",
+      "aten.batch_norm.default",
+      "torch.nn.functional.batch_norm"
+    ]
+  },
+  "dropout": {
+    "arity": [
+      1,
+      2
+    ],
+    "shape": "unary",
+    "effects": [
+      "random"
+    ],
+    "lowerings": [
+      "native",
+      "expanded"
+    ],
+    "expansion": "mask_scale",
+    "imports": [
+      "Dropout",
+      "torch.nn.functional.dropout",
+      "aten.dropout.default"
+    ]
+  },
+  "where": {
+    "arity": [
+      3,
+      3
+    ],
+    "shape": "where",
+    "effects": [],
+    "lowerings": [
+      "native",
+      "expanded"
+    ],
+    "expansion": null,
+    "imports": [
+      "torch.where",
+      "aten.where.self"
+    ]
+  },
+  "masked_fill": {
+    "arity": [
+      2,
+      2
+    ],
+    "shape": "unary",
+    "effects": [],
+    "lowerings": [
+      "native",
+      "expanded"
+    ],
+    "expansion": null,
+    "imports": [
+      "masked_fill",
+      "aten.masked_fill.Scalar"
+    ]
+  },
+  "pad": {
+    "arity": [
+      1,
+      1
+    ],
+    "shape": "pad",
+    "effects": [],
+    "lowerings": [
+      "native",
+      "expanded"
+    ],
+    "expansion": null,
+    "imports": [
+      "torch.nn.functional.pad",
+      "aten.pad.default"
+    ]
+  },
+  "unfold": {
+    "arity": [
+      1,
+      1
+    ],
+    "shape": "unfold",
+    "effects": [],
+    "lowerings": [
+      "native",
+      "expanded"
+    ],
+    "expansion": null,
+    "imports": []
+  },
+  "cast": {
+    "arity": [
+      1,
+      1
+    ],
+    "shape": "cast",
+    "effects": [],
+    "lowerings": [
+      "native",
+      "expanded"
+    ],
+    "expansion": null,
+    "imports": []
+  },
+  "rand_like": {
+    "arity": [
+      1,
+      1
+    ],
+    "shape": "unary",
+    "effects": [
+      "random"
+    ],
+    "lowerings": [
+      "native",
+      "expanded"
+    ],
+    "expansion": null,
+    "imports": []
+  },
+  "copy_buffer": {
+    "arity": [
+      2,
+      2
+    ],
+    "shape": "copy",
+    "effects": [
+      "state"
+    ],
+    "lowerings": [
+      "native",
+      "expanded"
+    ],
+    "expansion": null,
+    "imports": []
+  },
+  "tuple": {
+    "arity": [
+      0,
+      999
+    ],
+    "shape": "structure",
+    "effects": [],
+    "lowerings": [
+      "native",
+      "expanded"
+    ],
+    "expansion": null,
+    "imports": [
+      "tuple"
+    ]
+  },
+  "dict": {
+    "arity": [
+      0,
+      999
+    ],
+    "shape": "structure",
+    "effects": [],
+    "lowerings": [
+      "native",
+      "expanded"
+    ],
+    "expansion": null,
+    "imports": [
+      "dict"
+    ]
+  },
+  "call": {
+    "arity": [
+      0,
+      999
+    ],
+    "shape": "region",
+    "effects": [],
+    "lowerings": [
+      "native",
+      "expanded"
+    ],
+    "expansion": null,
+    "imports": [
+      "call"
+    ]
+  },
+  "branch": {
+    "arity": [
+      0,
+      999
+    ],
+    "shape": "region",
+    "effects": [],
+    "lowerings": [
+      "native",
+      "expanded"
+    ],
+    "expansion": null,
+    "imports": [
+      "branch"
+    ]
+  },
+  "loop": {
+    "arity": [
+      0,
+      999
+    ],
+    "shape": "region",
+    "effects": [],
+    "lowerings": [
+      "native",
+      "expanded"
+    ],
+    "expansion": null,
+    "imports": [
+      "loop"
+    ]
+  },
+  "logical_not": {
+    "arity": [
+      1,
+      1
+    ],
+    "shape": "bool_unary",
+    "effects": [],
+    "lowerings": [
+      "native",
+      "expanded"
+    ],
+    "expansion": null,
+    "imports": []
+  },
+  "isneginf": {
+    "arity": [
+      1,
+      1
+    ],
+    "shape": "bool_unary",
+    "effects": [],
+    "lowerings": [
+      "native",
+      "expanded"
+    ],
+    "expansion": null,
+    "imports": []
+  },
+  "all": {
+    "arity": [
+      1,
+      1
+    ],
+    "shape": "reduce",
+    "effects": [],
+    "lowerings": [
+      "native",
+      "expanded"
+    ],
+    "expansion": null,
+    "imports": []
+  },
+  "amax_or_zero": {
+    "arity": [
+      1,
+      1
+    ],
+    "shape": "reduce",
+    "effects": [],
+    "lowerings": [
+      "native",
+      "expanded"
+    ],
+    "expansion": null,
+    "imports": []
+  },
+  "training": {
+    "arity": [
+      0,
+      0
+    ],
+    "shape": "training",
+    "effects": [],
+    "lowerings": [
+      "native",
+      "expanded"
+    ],
+    "expansion": null,
+    "imports": []
+  },
+  "causal_mask": {
+    "arity": [
+      1,
+      1
+    ],
+    "shape": "bool_unary",
+    "effects": [],
+    "lowerings": [
+      "native",
+      "expanded"
+    ],
+    "expansion": null,
+    "imports": []
+  },
+  "grouped_matmul": {
+    "arity": [
+      2,
+      2
+    ],
+    "shape": "grouped_matmul",
+    "effects": [],
+    "lowerings": [
+      "native",
+      "expanded"
+    ],
+    "expansion": null,
+    "imports": []
+  },
+  "pool_values": {
+    "arity": [
+      1,
+      1
+    ],
+    "shape": "pool_values",
+    "effects": [],
+    "lowerings": [
+      "native",
+      "expanded"
+    ],
+    "expansion": null,
+    "imports": []
+  },
+  "pool_indices": {
+    "arity": [
+      1,
+      1
+    ],
+    "shape": "pool_values",
+    "effects": [],
+    "lowerings": [
+      "native",
+      "expanded"
+    ],
+    "expansion": null,
+    "imports": []
+  },
+  "pool_divisor": {
+    "arity": [
+      1,
+      1
+    ],
+    "shape": "pool_divisor",
+    "effects": [],
+    "lowerings": [
+      "native",
+      "expanded"
+    ],
+    "expansion": null,
+    "imports": []
+  },
+  "reduce_max": {
+    "arity": [
+      1,
+      1
+    ],
+    "shape": "reduce_max",
+    "effects": [],
+    "lowerings": [
+      "native",
+      "expanded"
+    ],
+    "expansion": null,
+    "imports": []
+  },
+  "gather": {
+    "arity": [
+      2,
+      2
+    ],
+    "shape": "gather",
+    "effects": [],
+    "lowerings": [
+      "native",
+      "expanded"
+    ],
+    "expansion": null,
+    "imports": []
+  },
+  "batch_count": {
+    "arity": [
+      1,
+      1
+    ],
+    "shape": "count",
+    "effects": [],
+    "lowerings": [
+      "native",
+      "expanded"
+    ],
+    "expansion": null,
+    "imports": []
+  },
+  "require_batch": {
+    "arity": [
+      1,
+      1
+    ],
+    "shape": "unary",
+    "effects": [],
+    "lowerings": [
+      "native",
+      "expanded"
+    ],
+    "expansion": null,
+    "imports": []
+  },
+  "reciprocal_counter": {
+    "arity": [
+      1,
+      1
+    ],
+    "shape": "rate",
+    "effects": [],
+    "lowerings": [
+      "native",
+      "expanded"
+    ],
+    "expansion": null,
+    "imports": []
+  },
+  "index_rows": {
+    "arity": [
+      2,
+      2
+    ],
+    "shape": "embedding",
+    "effects": [],
+    "lowerings": [
+      "native",
+      "expanded"
+    ],
+    "expansion": null,
+    "imports": []
+  },
+  "empty_sequence": {
+    "arity": [
+      1,
+      1
+    ],
+    "shape": "empty_sequence",
+    "effects": [],
+    "lowerings": [
+      "native",
+      "expanded"
+    ],
+    "expansion": null,
+    "imports": []
+  }
+}

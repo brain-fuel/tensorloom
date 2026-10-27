@@ -1,0 +1,39 @@
+registry/ironframe-planes:
+  digest: sha256:4143e383fe63efbc
+  verdict: pending
+registry/lawspec-harness:
+  digest: sha256:ac7126361264ef1b
+  verdict: pending
+registry/lawspec-iteration:
+  digest: sha256:201a092be9c2d3aa
+  verdict: pending
+registry/lawspec-native-bindings:
+  digest: sha256:cc62f05e45928995
+  verdict: pending
+registry/lawtwin-planes:
+  digest: sha256:383211c67d6fc4d8
+  verdict: pending
+registry/pytorch-accuracy:
+  digest: sha256:90073625482e9fd6
+  verdict: pending
+registry/pytorch-batchnorm:
+  digest: sha256:f6e2ab33cbd97099
+  verdict: pending
+registry/pytorch-broadcasting:
+  digest: sha256:60708a309d45a847
+  verdict: pending
+registry/pytorch-export:
+  digest: sha256:505bde9dbaf1fb60
+  verdict: pending
+registry/pytorch-index:
+  digest: sha256:6b06ff31e4aa61f5
+  verdict: pending
+registry/pytorch-modules:
+  digest: sha256:24b45eaea8452101
+  verdict: pending
+registry/pytorch-random:
+  digest: sha256:57872d56d4140557
+  verdict: pending
+registry/user-plan:
+  digest: sha256:b114874ca1c3a37d
+  verdict: pending

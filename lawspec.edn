@@ -1,3 +1,4 @@
+; Local generation layout: ref:DEC-build-artifacts.
 {:manifest-version 1
  :component {:name "tensorloom" :version "0.2.0"}
  :language-profile "1.0-rc.2"
@@ -5,7 +6,7 @@
  :generation {:cases 50 :max-attempts 10000 :max-shrinks 1000 :exhaustive-limit 4096}
  :sources ["laws/shapes.lawspec" "laws/graphs.lawspec"]
  :inputs ["lib" "python/tensorloom" "priv/operations.json"]
- :targets [{:language :elixir :root "."
+ :targets [{:language :elixir :root "." :source-dir "generated/elixir"
    :native-bindings {
     :types [{:type "tensorloom.shapes::type::Matrix"
       :native ["Tensorloom" "MatrixShape"]

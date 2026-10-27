@@ -13,3 +13,11 @@ __pycache__/
 *.pyc
 /artifacts/
 .hypothesis/
+
+# Recreated by npm ci and npm run generate.
+/node_modules/
+/generated/
+/test/*_lawspec_test.exs
+/test/support/
+/python/lawspec_generated/
+/python/lawspec_tests/

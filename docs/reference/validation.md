@@ -7,15 +7,30 @@ title: Automated validation and review status
 
 Validation date: 2026-10-26. Toolchain: Python 3.13.15, PyTorch 2.14.1,
 pytest 8.4.2, Hypothesis 6.170.12, Elixir 1.20.4, Erlang/OTP 29 and StreamData
-1.4.0. The sibling LawSpec checkout is used in place and is not edited.
-See ref:DEC-compiler and ref:DEC-law-owned-conformance.
+1.4.0. Generation uses the published LawSpec 0.31.0 npm release;
+`package-lock.json` fixes its dependencies and integrity hashes. No sibling
+checkout is required. See ref:DEC-compiler, ref:DEC-law-owned-conformance and
+ref:DEC-build-artifacts.
 
-Run `node scripts/verify.mjs` after setup in README.md. This checks definitions,
+Run `npm run verify` after setup in README.md. This checks definitions,
 generates and runs both independently built LawSpec components, then runs
-project status and validation. `lawspec.edn` owns frontend contracts;
+Canon review status (`ricestax canon vet`) and validation (`ricestax canon check`).
+The released LawSpec 0.31.0 CLI does not include the development checkout's
+`project status`/`project validate` wrappers. `scripts/verify.mjs` composes the
+released tools directly and writes `artifacts/verification-summary.json`.
+`lawspec.edn` owns frontend contracts;
 `python/lawspec.edn` owns backend conformance. Examples, properties and finite
 exhaustive checking are selected explicitly; mandatory definition validation
 remains independent. No solver or proof checker is selected.
+
+Fresh-checkout reproduction was checked from a source-only copy outside the
+project directory, with no sibling repositories, generated outputs, local
+ownership manifests, virtual environment or installed dependencies. The README
+commands `npm ci`, `mix local.hex --force`, `npm run setup` and `npm run demo`
+passed. The demo checked Elixir-to-PyTorch output and gradients, both FX
+lowerings, and saved export reload; `mix test` passed all 211 cases. All 57
+compiler-owned files are excluded from the Git index. Local ownership metadata
+is recreated alongside ignored outputs rather than tracked separately.
 
 The Python suite is generated entirely from
 `python/laws/conformance.lawspec`. The fresh LawSpec CLI run passed all 314 native cases:
@@ -61,7 +76,7 @@ PyTorch's empty Bool-matmul behavior, which inference now preserves. No LawSpec
 compiler change or Ironframe/LawTwin integration is required for this suite.
 
 **Human review is pending.** Canon material is ingested as pending; no verdict is
-forged. Strict Canon checking and the aggregate project-validation exit status
+forged. Strict Canon checking and the aggregate verification exit status
 remain nonpassing while sign-off is pending, independently of executable-check
 outcomes. The verification script returns 2 for that review condition and keeps
 reports in ignored `artifacts/` and `.lawspec/` directories. Regenerate reports

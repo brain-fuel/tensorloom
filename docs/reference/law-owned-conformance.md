@@ -12,7 +12,9 @@ mutation rejection. Generated pytest/Hypothesis files are execution artifacts;
 there is no separate handwritten pytest suite. See ref:DEC-law-owned-conformance.
 
 The Elixir frontend uses `lawspec.edn`; the independently built Python backend
-uses `python/lawspec.edn`. Both run through `node scripts/verify.mjs`. Native
+uses `python/lawspec.edn`. Both run through `npm run verify` using the pinned
+published LawSpec 0.31.0 release (ref:DEC-build-artifacts). Generated artifacts
+are ignored and recreated locally. Native
 bindings return typed `Observation` values containing every output/gradient/state
 sample and exact structure, identity or diagnostic facts. Python adapters do not
 assert conformance, invoke pytest, or return a cached success flag. The native
@@ -71,7 +73,8 @@ lengths and rejecting any differing element expresses full comparison without
 that recursion. A general improvement to stack-safe structural recursion in the
 Python dynamic-definition fallback would make the original recursive spelling
 usable at larger sizes. A `prelude.all` convenience alias would be ergonomic;
-it is not needed for the contract. The sibling checkout was not changed.
+it is not needed for the contract. The original assessment left the sibling
+checkout unchanged; normal installation now uses the published release.
 
 The inspected sources establish the tool boundary: ref:lawspec-native-bindings
 and ref:lawspec-harness cover in-process native adapters and executable checks;

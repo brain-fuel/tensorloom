@@ -6,8 +6,8 @@ defmodule Tensorloom.MixProject do
       app: :tensorloom,
       version: "0.2.0",
       elixir: "~> 1.20.0",
-      erlc_paths: ["src"] ++ test_paths(),
-      elixirc_paths: ["lib"] ++ test_paths(),
+      erlc_paths: ["generated/elixir"] ++ test_paths(),
+      elixirc_paths: ["lib", "generated/elixir"] ++ test_paths(),
       deps: [{:stream_data, "== 1.4.0", only: :test}]
     ]
   end

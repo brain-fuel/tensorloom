@@ -1,0 +1,20 @@
+{
+  "name": "tensorloom",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "devDependencies": {
+    "lawspec": "0.31.0",
+    "ricestax": "0.3.2"
+  },
+  "scripts": {
+    "setup": "node scripts/setup.mjs",
+    "generate": "node scripts/generate.mjs",
+    "demo": "node scripts/demo.mjs",
+    "verify": "node scripts/verify.mjs",
+    "test": "node scripts/verify.mjs"
+  }
+}

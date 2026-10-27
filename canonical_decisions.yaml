@@ -126,5 +126,16 @@
       "user-plan",
       "lawspec-native-bindings"
     ]
+  },
+  "DEC-build-artifacts": {
+    "status": "decided",
+    "opened": "0.2.0",
+    "decided": "0.2.0",
+    "question": "How does a fresh checkout reproduce generated code and run a working demo?",
+    "answer": "The user requires generated outputs to remain local and a README that explains installation and a working demo. Track authored LawSpec contracts, adapters, implementation, fixtures and lockfiles; ignore compiler-owned runtime/tests and their local ownership manifests together. Pin the published LawSpec 0.31.0 release (tag v0.31.0), Rice's Tax 0.3.2 and npm dependency integrity in package-lock.json. scripts/setup.mjs restores locked Python dependencies, Elixir dependencies, generation, compilation and the Canon cache; scripts/demo.mjs exercises Elixir graph construction, generated PyTorch execution and gradients, FX capture in both lowering modes, and saved export reload. Document exact fresh-clone commands and output in README.md. LawSpec 0.31.0 lacks the development checkout's project status/validate commands; scripts/verify.mjs composes released definition/native checks with ricestax canon vet and canon check, preserving separate executable and review outcomes in artifacts/verification-summary.json. This supersedes the sibling-checkout build requirement in DEC-compiler and the earlier practice of tracking generated outputs; preserve decision and Git history. Affects lawspec.edn, python/lawspec.edn, laws/*.lawspec, python/laws/conformance.lawspec, mix.exs, package.json, scripts and examples/demo.*. Automated execution remains separate from pending human Canon vetting.",
+    "refs": [
+      "user-plan",
+      "lawspec-release"
+    ]
   }
 }

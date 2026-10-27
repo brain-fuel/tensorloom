@@ -42,26 +42,31 @@
   "lawspec-native-bindings": {
     "kind": "article",
     "title": "LawSpec native binding contract",
-    "locator": "../lawspec/docs/reference/native-bindings.md"
+    "locator": "https://github.com/brain-fuel/lawspec/blob/v0.31.0/docs/reference/native-bindings.md"
   },
   "lawspec-harness": {
     "kind": "article",
     "title": "LawSpec finite checking, strategies and harness ownership",
-    "locator": "../lawspec/docs/reference/language/harness.md"
+    "locator": "https://github.com/brain-fuel/lawspec/blob/v0.31.0/docs/reference/language/harness.md"
   },
   "lawspec-iteration": {
     "kind": "article",
     "title": "LawSpec canonical sequence iteration lowering",
-    "locator": "../lawspec/src/LawSpec/Imports.hs"
+    "locator": "https://github.com/brain-fuel/lawspec/blob/v0.31.0/src/LawSpec/Imports.hs"
   },
   "ironframe-planes": {
     "kind": "article",
     "title": "Ironframe environment and topology ownership",
-    "locator": "../ironframe/README.md"
+    "locator": "https://github.com/brain-fuel/ironframe/blob/60b8df32c43a775528cd456a1fc71809dbd5b769/README.md"
   },
   "lawtwin-planes": {
     "kind": "article",
     "title": "LawTwin protocol-fixture and reference-model ownership",
-    "locator": "../lawtwin/README.md"
+    "locator": "https://github.com/brain-fuel/lawtwin/blob/5b7c5dc0d571285c54daa4fee4af83f9b5505354/README.md"
+  },
+  "lawspec-release": {
+    "kind": "article",
+    "title": "LawSpec 0.31.0 published generator release",
+    "locator": "https://www.npmjs.com/package/lawspec/v/0.31.0"
   }
 }

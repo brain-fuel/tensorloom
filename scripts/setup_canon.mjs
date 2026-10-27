@@ -3,7 +3,7 @@ import { access, cp, mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { initialize } from '../../lawspec/npm/node_modules/ricestax/setup.mjs';
+import { initialize } from 'ricestax/setup.mjs';
 const root = fileURLToPath(new URL('..', import.meta.url));
 const destination = join(root, '.ricestax');
 try {

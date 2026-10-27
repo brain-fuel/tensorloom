@@ -7,6 +7,7 @@ const root = fileURLToPath(new URL('..', import.meta.url));
 const cli = resolve(root, 'node_modules/lawspec/bin/lawspec.mjs');
 const canonCli = resolve(root, 'node_modules/ricestax/bin/ricestax.mjs');
 const summary = { components: {}, canon: { status: 'not-run' } };
+const freshness = process.argv.includes('--cached') ? [] : ['--fresh'];
 mkdirSync(resolve(root, 'artifacts'), { recursive: true });
 function run(label, args, allowFailure = false, executable = cli) {
   console.log(label);
@@ -29,14 +30,19 @@ for (const [component, config, target] of [
 ]) {
   run(`${component}-definitions`, ['check', '--config', config, '--json']);
   run(`${component}-generation`, ['generate', '--config', config, '--target', target]);
-  const tests = run(`${component}-native`, ['test', '--config', config, '--target', target, '--fresh', '--json']);
+  const tests = run(`${component}-native`, ['test', '--config', config, '--target', target, ...freshness, '--json']);
   if (!tests.every(test => test.ok)) process.exit(1);
   summary.components[component] = { definitions: 'passed', native: 'passed', results: tests };
   console.log(`${component}: LawSpec native execution passed`);
 }
 // LawSpec 0.31.0 has no project status/validate verbs. Use released Canon
 // interfaces directly rather than depending on an unpublished development CLI.
-run('canon-review', ['canon', 'vet'], false, canonCli);
+const review = run('canon-review', ['canon', 'vet'], true, canonCli);
+if (review.status !== 0 && review.status !== 1) {
+  process.stderr.write(review.stdout || '');
+  process.stderr.write(review.stderr || 'Canon review status could not run.');
+  process.exit(1);
+}
 const canon = run('canon-validation', ['canon', 'check'], true, canonCli);
 if (canon.status !== 0 && canon.status !== 1) {
   process.stderr.write(canon.stdout || '');
@@ -44,13 +50,14 @@ if (canon.status !== 0 && canon.status !== 1) {
   process.exit(1);
 }
 summary.canon = {
-  status: canon.status === 0 ? 'passed' : 'nonpassing',
+  status: canon.status === 0 && review.status === 0 ? 'passed' : 'nonpassing',
   exitCode: canon.status,
+  reviewExitCode: review.status,
   reviewReport: 'artifacts/canon-review.log',
   validationReport: 'artifacts/canon-validation.log',
 };
 writeFileSync(resolve(root, 'artifacts/verification-summary.json'), JSON.stringify(summary, null, 2) + '\n');
-if (canon.status !== 0) {
+if (canon.status !== 0 || review.status !== 0) {
   console.log('Executable checks passed. Canon validation remains nonpassing; see artifacts/canon-review.log and artifacts/canon-validation.log for pending review and any findings.');
   process.exitCode = 2;
 } else console.log('Both LawSpec components and Canon validation passed.');

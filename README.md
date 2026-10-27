@@ -90,6 +90,8 @@ Verification checks definitions, regenerates and executes both LawSpec component
 then lists Canon review status and runs Canon validation directly. The supported
 profile currently has 190 Elixir LawSpec cases and 314 Python cases; `mix test` also runs the authored
 ExUnit tests. Reports are written to ignored `artifacts/` and `.lawspec/` folders.
+Verification runs fresh tests by default. `npm run verify -- --cached` lets
+LawSpec reuse current evidence; changed inputs still require execution.
 
 **Canon human review is pending.** `npm run verify` returns **2** when executable
 checks pass but Canon validation remains nonpassing; inspect
